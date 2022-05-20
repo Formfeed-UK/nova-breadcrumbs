@@ -16,13 +16,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Formfeed\\ResourceCards\\": "src/"
+            "Formfeed\\Breadcrumbs\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Formfeed\\ResourceCards\\AssetServiceProvider"
+                "Formfeed\\Breadcrumbs\\AssetServiceProvider"
             ]
         }
     },
