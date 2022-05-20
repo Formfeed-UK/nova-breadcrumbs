@@ -22,7 +22,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Formfeed\\Breadcrumbs\\AssetServiceProvider"
+                "Formfeed\\Breadcrumbs\\CardServiceProvider"
             ]
         }
     },
