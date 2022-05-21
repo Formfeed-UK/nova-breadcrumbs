@@ -79,6 +79,7 @@ class Breadcrumbs extends ResourceCard {
         if (($display = $this->request->query("display")) && in_array($this->request->query("display"), ["create", "update", "attach", "replicate"])) {
             $array[] = ['displayType' => 'span', 'label' => ucfirst($display)];
         }
+        $array[array_key_last($array)]['displayType'] = 'span';
         return $array;
     }
 
