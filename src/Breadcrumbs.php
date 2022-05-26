@@ -60,7 +60,7 @@ class Breadcrumbs extends ResourceCard {
             }
             $currentModel = new ($this->resource::$model);
 
-            if ($this->request->query('viaResource') && $this->request->query('viaResource') !== "undefined") {
+            if ($this->request->query('viaResource') && $this->request->query('viaResource') !== "undefined" && $this->request->query('viaResourceId')) {
                 $parentResource = Nova::resourceForKey($this->request->query('viaResource'));
                 $parentModel = ($parentResource::$model)::findOrFail($this->request->query('viaResourceId'));
                 $currentModel->parent = $parentModel;
