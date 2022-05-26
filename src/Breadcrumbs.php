@@ -98,7 +98,7 @@ class Breadcrumbs extends ResourceCard {
             if ($model->id) {
                 $relationship = [
                     'displayType' => 'detail',
-                    'label' => $model->$title_display ?? $model->$title,
+                    'label' => $model->$title,
                     'resourceName' => $key,
                     'resourceId' => $model->id
                 ];
