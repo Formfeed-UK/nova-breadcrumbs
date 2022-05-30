@@ -74,7 +74,6 @@ export default {
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  background-color: #fff;
   border-radius: 10px;
 }
 
@@ -102,9 +101,9 @@ export default {
   font-family: "Font Awesome 5 Pro";
   line-height: 1;
   text-align: center;
-  color: #3c4b5f;
   font-weight: 900;
   font-size: 0.79rem;
+  vertical-align: -5%;
 }
 
 .breadcrumbs .breadcrumbs-item:last-child:after {
