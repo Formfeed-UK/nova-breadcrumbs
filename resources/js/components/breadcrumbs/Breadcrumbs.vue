@@ -51,7 +51,7 @@ export default {
     },
 
     linkHref(item) {
-      const link = `${this.linkURI(item)}${this.linkData(item)}${this.hashData(item )}`;
+      const link = item.url ?? `${this.linkURI(item)}${this.linkData(item)}${this.hashData(item )}`;
       return link;
     },
   },

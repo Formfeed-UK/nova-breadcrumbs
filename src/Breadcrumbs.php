@@ -71,10 +71,8 @@ class Breadcrumbs extends ResourceCard {
 
         $array = [];
 
-        //dd($this->relationships($currentModel));
-
         $this->getRelationshipTree($currentModel, $array);
-        $array[] = ['displayType' => 'home', 'label' => "Home"];
+        $array[] = ['url' => config("nova.path", "/nova"), 'displayType' => 'home', 'label' => "Home"];
         $array = array_reverse($array);
         if (($display = $this->request->query("display")) && in_array($this->request->query("display"), ["create", "update", "attach", "replicate"])) {
             $array[] = ['displayType' => 'span', 'label' => ucfirst($display)];
@@ -93,7 +91,6 @@ class Breadcrumbs extends ResourceCard {
             $label = $novaClass::label();
             $key = $novaClass::uriKey();
             $title = $novaClass::$title;
-            $title_display = $novaClass::$title . "_display";
 
             if ($model->id) {
                 $relationship = [
@@ -159,7 +156,6 @@ class Breadcrumbs extends ResourceCard {
                 'displayType' => 'detail'
             ];
         }
-
         return [];
     }
 
@@ -197,21 +193,6 @@ class Breadcrumbs extends ResourceCard {
         $property = $reflection->getProperty('preservedName');
         $property->setAccessible(true);
         return($property->getValue($tab));
-    }
-
-    protected function encodeURI($string) {
-        $unescaped = array(
-            '%2D'=>'-','%5F'=>'_','%2E'=>'.','%21'=>'!', '%7E'=>'~',
-            '%2A'=>'*', '%27'=>"'", '%28'=>'(', '%29'=>')'
-        );
-        $reserved = array(
-            '%3B'=>';','%2C'=>',','%2F'=>'/','%3F'=>'?','%3A'=>':',
-            '%40'=>'@','%26'=>'&','%3D'=>'=','%2B'=>'+','%24'=>'$'
-        );
-        $score = array(
-            '%23'=>'#'
-        );
-        return strtr(rawurlencode($string), array_merge($reserved,$unescaped,$score));
     }
 
     public function jsonSerialize(): array {
