@@ -30,6 +30,7 @@ class Breadcrumbs extends ResourceCard {
     public $onlyOnDetail = null;
     public $height = "dynamic";
     public $resource;
+    public array $extraClasses = [];
 
     public function __construct(NovaRequest $request, Resource $resource = null) {
         $this->resource = $resource;
@@ -48,6 +49,11 @@ class Breadcrumbs extends ResourceCard {
 
     public function withResource($resource) {
         $this->resource = $resource;
+        return $this;
+    }
+
+    public function withClasses($classes) {
+        $this->extraClasses = array_merge($this->extraClasses, Arr::wrap($classes));
         return $this;
     }
 
@@ -276,6 +282,7 @@ class Breadcrumbs extends ResourceCard {
     public function jsonSerialize(): array {
         return array_merge(parent::jsonSerialize(), [
             "items" => $this->breadcrumbArray(),
+            "extraClasses" => $this->extraClasses
         ]);
     }
 }

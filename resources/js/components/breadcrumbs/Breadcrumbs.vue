@@ -1,7 +1,6 @@
 <template>
   <Card class="flex flex-col justify-center">
-    <div class="breadcrumbs" v-if="shouldShowBreadcrumbs">
-      <!-- Attach Related Models -->
+    <div class="breadcrumbs" :class="card.extraClasses" v-if="shouldShowBreadcrumbs">
       <div
         v-for="(item, key) in card.items"
         :key="key"
@@ -96,7 +95,7 @@ export default {
 }
 
 .breadcrumbs svg.chevron {
-  height:1.6em;
+  height:1.5em;
   display:inline;
 }
 
