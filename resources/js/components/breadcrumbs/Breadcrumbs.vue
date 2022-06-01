@@ -13,6 +13,7 @@
         <a :href="linkHref(item)" v-else>
           {{ item.label }}
         </a>
+        <HeroIconSolidChevronRight class="chevron" v-if="key < card.items.length - 1" />
       </div>
     </div>
   </Card>
@@ -96,6 +97,7 @@ export default {
   font-weight: 600 !important;
 }
 
+/*
 .breadcrumbs .breadcrumbs-item:after {
   content: "\f054";
   font-family: "Font Awesome 5 Pro";
@@ -105,6 +107,7 @@ export default {
   font-size: 0.79rem;
   vertical-align: -5%;
 }
+}*/
 
 .breadcrumbs .breadcrumbs-item:last-child:after {
   display: none;

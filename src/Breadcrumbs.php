@@ -63,7 +63,7 @@ class Breadcrumbs extends ResourceCard {
             if ($this->request->query('viaResource') && $this->request->query('viaResource') !== "undefined" && $this->request->query('viaResourceId')) {
                 $parentResource = Nova::resourceForKey($this->request->query('viaResource'));
                 $parentModel = ($parentResource::$model)::findOrFail($this->request->query('viaResourceId'));
-                $currentModel->parent = $parentModel;
+                $currentModel->{$this->getParentMethod()} = $parentModel;
             }
         } else {
             $currentModel = $this->resource->model()->query()->where($primaryKey, request('resourceId'))->first();
@@ -72,10 +72,10 @@ class Breadcrumbs extends ResourceCard {
         $array = [];
 
         $this->getRelationshipTree($currentModel, $array);
-        $array[] = ['url' => config("nova.path", "/nova"), 'displayType' => 'home', 'label' => "Home"];
+        $array[] = ['url' => config("nova.path", "/nova"), 'displayType' => 'home', 'label' => __("Home")];
         $array = array_reverse($array);
         if (($display = $this->request->query("display")) && in_array($this->request->query("display"), ["create", "update", "attach", "replicate"])) {
-            $array[] = ['displayType' => 'span', 'label' => ucfirst($display)];
+            $array[] = ['displayType' => 'span', 'label' => __(ucfirst($display))];
         }
         $array[array_key_last($array)]['displayType'] = 'span';
         return $array;
@@ -88,9 +88,9 @@ class Breadcrumbs extends ResourceCard {
                 return;
             }
 
-            $label = $novaClass::label();
+            $label = __($novaClass::{config("breadcrumbs.label", "label")}());
+            $title = $novaClass::${config("breadcrumbs.title", "title")};
             $key = $novaClass::uriKey();
-            $title = $novaClass::$title;
 
             if ($model->id) {
                 $relationship = [
@@ -102,27 +102,71 @@ class Breadcrumbs extends ResourceCard {
                 $array[] = $relationship;
             }
 
-            if (is_null($novaClass::$displayInNavigation) || $novaClass::$displayInNavigation !== false) {
+            if ($this->shouldLinkToParent($model, $novaClass)) {
+                $indexCrumb = [
+                    'displayType' => "span",
+                    'label' => $label
+                ];
+                $tabsQuery = $this->getTabs($model, $novaClass);
+                if (count($tabsQuery) > 0) {
+                    $indexCrumb = array_merge($indexCrumb, $tabsQuery);
+                } else {
+                    $indexCrumb = array_merge($indexCrumb, $this->getParentCrumb($model, $novaClass));
+                }
+            } else {
                 $indexCrumb = [
                     'displayType' => "index",
                     'label' => $label,
                     'resourceName' => $key
                 ];
-            } else {
-                $indexCrumb = [
-                    'displayType' => "span",
-                    'label' => $label
-                ];
-                $indexCrumb = array_merge($indexCrumb, $this->getTabQuery($model, $novaClass));
             }
             $array[] = $indexCrumb;
-            $this->getRelationshipTree($model->parent, $array);
+            $this->getRelationshipTree($this->getParentModel($model), $array);
         }
     }
 
-    protected function getTabQuery($model, $novaClass = null) {
+    protected function shouldLinkToParent($model, $novaClass) {
 
-        if (!class_exists(Tabs::class) || is_null($model->parent)) {
+        if (isset($novaClass::$linkToParent)) {
+            return $novaClass::$linkToParent;
+        }
+
+        if (!is_null(config("breadcrumbs.linkToParent"))) {
+            if(config("breadcrumbs.linkToParent") === true && $this->hasParentModel($model)) {
+                return true;
+            }
+        }
+
+        if (isset($novaClass::$displayInNavigation)) {
+            return !$novaClass::$displayInNavigation;
+        }
+
+        return false;
+    }
+
+    protected function getParentCrumb($model, $novaClass = null) {
+        if ($novaClass === null) {
+            $novaClass = Nova::resourceForModel($model);
+        }
+
+        if (!is_null($this->getParentModel($model)?->id)) {
+            $parentResource = Nova::newResourceFromModel($this->getParentModel($model));
+            return [
+                'resourceName' => $parentResource->uriKey(),
+                'resourceId' => $this->getParentModel($model)?->id,
+                'displayType' => 'detail'
+            ];
+        }
+        return [];
+    }
+
+    protected function getParentMethod() {
+        return config("breadcrumbs.parentMethod", "parent");
+    }
+
+    protected function getTabs($model, $novaClass = null) {
+
+        if (!class_exists(Tabs::class) || is_null($this->getParentModel($model))) {
             return [];
         }
 
@@ -130,7 +174,7 @@ class Breadcrumbs extends ResourceCard {
             $novaClass = Nova::resourceForModel($model);
         }
 
-        $parentResource = Nova::newResourceFromModel($model->parent);
+        $parentResource = Nova::newResourceFromModel($this->getParentModel($model));
         $fields = $parentResource->fields($this->request);
 
         foreach ($fields as $field) {
@@ -152,11 +196,45 @@ class Breadcrumbs extends ResourceCard {
                 'tab' => $tab->meta['tabSlug'],
                 'tabQuery' => $tabQuery ?? "tab",
                 'resourceName' => $parentResource->uriKey(),
-                'resourceId' => $model->parent->id,
+                'resourceId' => $this->getParentModel($model)?->id,
                 'displayType' => 'detail'
             ];
         }
         return [];
+    }
+
+    protected function hasParentModel(Model $model) {
+        if (method_exists($model, $this->getParentMethod())) {
+            return true;
+        } 
+        else {
+            $relationships = $this->relationships($model);
+            if (count($relationships) > 0) {
+                foreach ($relationships as $key => $relationship) {
+                    if ($relationship['type'] === "BelongsTo") {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    protected function getParentModel(Model $model) {
+        if (method_exists($model, $this->getParentMethod())) {
+            return $model->{$this->getParentMethod()};
+        } 
+        else {
+            $relationships = $this->relationships($model);
+            if (count($relationships) > 0) {
+                foreach ($relationships as $key => $relationship) {
+                    if ($relationship['type'] === "BelongsTo") {
+                        return $model->$key;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     protected function relationships(Model $model) {
@@ -192,7 +270,7 @@ class Breadcrumbs extends ResourceCard {
         $reflection = new ReflectionObject($tab);
         $property = $reflection->getProperty('preservedName');
         $property->setAccessible(true);
-        return($property->getValue($tab));
+        return ($property->getValue($tab));
     }
 
     public function jsonSerialize(): array {
