@@ -16,10 +16,6 @@ class CardServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->booted(function () {
-            $this->routes();
-        });
-
         Nova::serving(function (ServingNova $event) {
             Nova::script('breadcrumbs', __DIR__.'/../dist/js/card.js');
             Nova::style('breadcrumbs', __DIR__.'/../dist/css/card.css');
