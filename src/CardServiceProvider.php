@@ -27,22 +27,6 @@ class CardServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the card's routes.
-     *
-     * @return void
-     */
-    protected function routes()
-    {
-        if ($this->app->routesAreCached()) {
-            return;
-        }
-
-        Route::middleware(['nova'])
-                ->prefix('nova-vendor/breadcrumbs')
-                ->group(__DIR__.'/../routes/api.php');
-    }
-
-    /**
      * Register any application services.
      *
      * @return void
