@@ -15,17 +15,21 @@ This package adds automated breadcrumbs to the top of Nova 4 resources.
 It supports:
 
 - belongsTo relationships to build a full set of breadcrumbs to your Nova root.
-- Linking directly to Resource Tabs in the `eminiarts/nova-tabs` package (Tab slugs are recommended)
-- 
-
+- Automatic detection of belongsTo relationships, and the ability to specify a relationship as the "parent" relationship
+- Linking directly to Resource Tabs in the [eminiarts/nova-tabs](https://github.com/eminiarts/nova-tabs) package (Tab slugs are recommended)
+- Linking to either the resource's index or its parent (for relationships included as fields)
+- Customising the title static variable and label functions for resources
+- Specifying custom css classes
 
 ## Installation
 
-Install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
+1) Install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
 
 ```bash
-composer require formfeed-uk/nova-theming-classes
+composer require formfeed-uk/nova-breadcrumbs
 ```
+
+
 
 ## Usage
 
