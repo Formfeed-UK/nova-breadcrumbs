@@ -17,7 +17,7 @@ class CardServiceProvider extends ServiceProvider {
 
         $this->publishes([
             __DIR__.'/../config/breadcrumbs.php' => config_path('breadcrumbs.php'),
-        ]);
+        ], "breadcrumbs-config");
 
         Nova::serving(function (ServingNova $event) {
             Nova::script('breadcrumbs', __DIR__ . '/../dist/js/card.js');
