@@ -279,10 +279,14 @@ class Breadcrumbs extends ResourceCard {
         return ($property->getValue($tab));
     }
 
+    protected function getClasses() {
+        return array_merge(Arr::wrap(config("breadcrumbs.cssClasses", [])), $this->extraClasses);
+    }
+
     public function jsonSerialize(): array {
         return array_merge(parent::jsonSerialize(), [
             "items" => $this->breadcrumbArray(),
-            "extraClasses" => $this->extraClasses
+            "extraClasses" => $this->getClasses()
         ]);
     }
 }

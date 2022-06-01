@@ -64,7 +64,17 @@ return [
         "labelFunction" => "label",
         "singularLabelFunction" => "singularLabel",
 
-
+        /*
+        |--------------------------------------------------------------------------
+        | Global CSS Classes
+        |--------------------------------------------------------------------------
+        |
+        | Set global additional css classes for all breadcrumbs cards.
+        |
+        | Can be added to on a per-resource basis using withClasses()
+        |
+        */
+        "cssClasses" => [],
 
     
 ];
