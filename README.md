@@ -110,4 +110,4 @@ If you have any requests for functionality or find any bugs please open an issue
 
 ## License
 
-Nova Resource Cards is open-sourced software licensed under the [MIT license](LICENSE.md).
+Nova Breadcrumbs is open-sourced software licensed under the [MIT license](LICENSE.md).
