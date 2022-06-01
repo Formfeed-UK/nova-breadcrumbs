@@ -85,6 +85,21 @@ class MyModel extends Model {
 }
 ```
 
+### Include in all Resources
+
+If you would like to include the Breadcrumbs on all resources in one place, the best way to do this is to override the `resolveCards` method on your `App/Nova/Resource.php` file, as by default this file is extended by all of the Nova resources in your Application.
+
+A very basic example could look like this:
+
+```php
+    public function resolveCards(NovaRequest $request)
+    {
+        $cards = $this->cards($request);
+        array_unshift($cards, Breadcrumbs::make($request, $this));
+        return collect(array_values($this->filter($cards)));
+    }
+```
+
 ### Configuration Options
 
 Please see the included config file for a full list of configuration options (it's well commented).
