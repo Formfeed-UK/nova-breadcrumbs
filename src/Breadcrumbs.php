@@ -247,6 +247,8 @@ class Breadcrumbs extends ResourceCard {
 
         $relationships = [];
 
+        $model = new (get_class($model));
+
         foreach ((new ReflectionClass($model))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if (
                 $method->class != get_class($model) ||
@@ -258,14 +260,13 @@ class Breadcrumbs extends ResourceCard {
 
             try {
                 $return = $method->invoke($model);
-
                 if ($return instanceof Relation) {
                     $relationships[$method->getName()] = [
                         'type' => (new ReflectionClass($return))->getShortName(),
                         'model' => (new ReflectionClass($return->getRelated()))->getName()
                     ];
                 }
-            } catch (ErrorException $e) {
+            } catch (\Throwable $e) {
             }
         }
 
