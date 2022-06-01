@@ -1,6 +1,8 @@
 # Nova 4 Breadcrumbs
 
-This [Laravel Nova](https://nova.laravel.com/) package adds automated breadcrumbs to the top of Nova 4 resources
+This [Laravel Nova](https://nova.laravel.com/) package adds automated breadcrumbs to the top of Nova 4 resources.
+
+Whilst I have tested this package, I have not tested its interactions with every package out there, and in every environment possible. It currently has an 0.x version number due to its lack of tenure with regards to interactions outside of my environment more than anything else. 
 
 ## Requirements
 
@@ -21,6 +23,10 @@ It supports:
 - Customising the title static variable and label functions for resources
 - Specifying custom css classes
 
+This package relies on [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) which wrap a number of nova pages. If you override these pages yourself ensure that nova-resource-cards is loaded after the packages which do so. 
+
+Please note that this package is currently **not** compatible with dashboards.
+
 ## Installation
 
 1) Install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
@@ -28,55 +34,79 @@ It supports:
 ```bash
 composer require formfeed-uk/nova-breadcrumbs
 ```
+2) Publish the config file (optional)
 
-
+```bash
+php artisan vendor:publish --tag=breadcrumbs-config
+```
 
 ## Usage
 
 ### General
 
-No additional configuration is required, the package will by default start working as soon as it is installed with all options enabled by default.
+1) Include the breadcrumbs card at the beginning of the cards array in any resources that you wish to use breadcrumbs (be sure to include `$this` as the second parameter):
 
-The theming classes are by default prefixed by the following:
-- Components: component-
-- Fields: field-
-- Resources: resource-
-- Nova Flexible Content Layout Groups: flex-group-
+```php
+...
 
-This can be changed in the configuration options (see below)
+use Formfeed\Breadcrumbs\Breadcrumbs;
+
+class MyResource extends Resource {
+    ...
+    public function cards(NovaRequest $request) {
+        return [
+            Breadcrumbs::make($request, $this),
+            ...
+        ];
+    }
+    ...
+}
+```
+This card extends `ResourceCard` from that package and as such has the visbility and authorisation methods available. 
+
+2) Optionally configure a `parent` method on your Model to explicitly define the relationship the package should query. The name of this function can be changed in the configuration file.
+
+```php
+
+class MyModel extends Model {
+
+    ...
+
+    public function parent() {
+        return $this->config();
+    }   
+
+    public function config() {
+        return $this->belongsTo(Config::class, "config_id");
+    }
+
+    ...
+
+}
+```
 
 ### Configuration Options
 
-By default all theming options are enabled with the above default prefixes.
+Please see the included config file for a full list of configuration options (it's well commented).
 
-To configure which theming classes are displayed and their prefix, add the following to your `config/nova.php`
+In addition to these options you can also specify the following options in the resource itself:
 
-Note that the final delimiter in prefixes must be applied manually if required (to allow for empty string prefixes, or alternative prefix delimiters)
+#### Link To parent
+This determines if the breadcrumb should link to the parent resource regardless of if the current resource's index is navigable from the main menu:
+`public static $linkToParent = true|false;`
 
-```php
-// config/nova.php
+#### Extra CSS Classes
+These can be configured globally or chained to the Breadcrumbs class:
+`Breadcrumbs::make($request, $this)->withClasses(["my-extra", "classes"])`
 
-return [
+#### Visibility and Authorisations
+Please see the [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) package for information on the visbility and authorisation methods. They broadly follow the same pattern as fields.
 
-...
+## Issues/Todo
 
-    'theming' => [
-         'component' => true|false, // Enable/Disable the component classes
-         'field' => true|false, // Enable/Disable the field name classes
-         'resource' => true|false, // Enable/Disable the resource name classes
-         'flex_group' => true|false, // Enable/Disable the Nova Flexible Content Layout Groups classes
-         'prefix'=> [
-            'component' => 'alternative-component-', // Component prefix
-            'field' => 'alternative-field-', // Field prefix
-            'resource' => 'alternative-resource-', // Resource prefix
-            'flex_group' => 'alternative-flex-group-' // Nova Flexible Content Layout Group prefix
-         ]
-    ]
+- Make compatible with Dashboards and other non-resource based pages.
 
-...
-
-]
-```
+If you have any requests for functionality or find any bugs please open an issue or submit a Pull Request. Pull requests will be actioned faster than Issues.
 
 ## License
 
