@@ -67,7 +67,7 @@ export default {
 
 <style>
 .breadcrumbs {
-  padding: 12px;
+  padding: 10px 14px;
   margin-top: 0;
   list-style: none;
   display: -webkit-box;
@@ -83,18 +83,21 @@ export default {
 }
 
 .breadcrumbs .breadcrumbs-item a {
-  margin-right: 6px;
-  margin-left: 8px;
   color: rgba(var(--colors-primary-500));
   text-decoration: none;
   font-weight: 600 !important;
+  vertical-align:middle;
 }
 
 .breadcrumbs .breadcrumbs-item span {
   display: inline-block;
-  margin-right: 6px;
-  margin-left: 8px;
   font-weight: 600 !important;
+  vertical-align:middle;
+}
+
+.breadcrumbs svg.chevron {
+  height:1.6em;
+  display:inline;
 }
 
 /*
@@ -107,9 +110,8 @@ export default {
   font-size: 0.79rem;
   vertical-align: -5%;
 }
-}*/
 
 .breadcrumbs .breadcrumbs-item:last-child:after {
   display: none;
-}
+}*/
 </style>
