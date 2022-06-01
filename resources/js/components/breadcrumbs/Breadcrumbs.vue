@@ -13,7 +13,7 @@
         <a :href="linkHref(item)" v-else>
           {{ item.label }}
         </a>
-        <HeroIconSolidChevronRight class="chevron" v-if="key < card.items.length - 1" />
+        <HeroiconsSolidChevronRight class="chevron" v-if="key < card.items.length - 1" />
       </div>
     </div>
   </Card>
