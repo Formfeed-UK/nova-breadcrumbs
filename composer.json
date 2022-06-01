@@ -1,6 +1,6 @@
 {
     "name": "formfeed-uk/nova-breadcrumbs",
-    "description": "A Laravel Nova package to show breadcrumbs on all crud pages",
+    "description": "A Laravel Nova package to show breadcrumbs on Nova Resources",
     "homepage": "https://github.com/formfeed-uk/nova-breadcrumbs",
     "license": "MIT",
     "keywords": [
