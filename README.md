@@ -105,6 +105,7 @@ Please see the [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/
 ## Issues/Todo
 
 - Make compatible with Dashboards and other non-resource based pages.
+- Enable support for Polymorphic/ManyToMany relationships based upon previously visited resources
 
 If you have any requests for functionality or find any bugs please open an issue or submit a Pull Request. Pull requests will be actioned faster than Issues.
 
