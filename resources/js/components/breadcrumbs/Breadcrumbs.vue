@@ -33,7 +33,7 @@ export default {
 
   methods: {
     linkURI(item) {
-      return `${item.resourceName ? "/resources/" : ""}${item.resourceName ?? ""}/${item.resourceId ?? ""}`;
+      return `${item.resourceName ? "resources/" : ""}${item.resourceName ?? ""}/${item.resourceId ?? ""}`;
     },
 
     linkData(item) {
@@ -51,7 +51,7 @@ export default {
     },
 
     linkHref(item) {
-      const link = item.url ?? `${this.linkURI(item)}${this.linkData(item)}${this.hashData(item )}`;
+      const link = item.url ?? `${item.base}/${this.linkURI(item)}${this.linkData(item)}${this.hashData(item )}`;
       return link;
     },
   },

@@ -97,13 +97,15 @@ class Breadcrumbs extends ResourceCard {
             $label = __($novaClass::{config("breadcrumbs.label", "label")}());
             $title = $novaClass::${config("breadcrumbs.title", "title")};
             $key = $novaClass::uriKey();
+            $base = rtrim(config("nova.path", "/nova"), "/");
 
             if ($model->id) {
                 $relationship = [
                     'displayType' => 'detail',
                     'label' => $model->$title,
                     'resourceName' => $key,
-                    'resourceId' => $model->id
+                    'resourceId' => $model->id,
+                    'base' => $base
                 ];
                 $array[] = $relationship;
             }
@@ -111,7 +113,8 @@ class Breadcrumbs extends ResourceCard {
             if ($this->shouldLinkToParent($model, $novaClass)) {
                 $indexCrumb = [
                     'displayType' => "span",
-                    'label' => $label
+                    'label' => $label,
+                    'base' => $base
                 ];
                 $tabsQuery = $this->getTabs($model, $novaClass);
                 if (count($tabsQuery) > 0) {
@@ -123,7 +126,8 @@ class Breadcrumbs extends ResourceCard {
                 $indexCrumb = [
                     'displayType' => "index",
                     'label' => $label,
-                    'resourceName' => $key
+                    'resourceName' => $key,
+                    'base' => $base
                 ];
             }
             $array[] = $indexCrumb;
