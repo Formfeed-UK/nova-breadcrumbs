@@ -6,16 +6,20 @@ namespace Formfeed\Breadcrumbs;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Contracts\RelatableField;
+use Laravel\Nova\Fields\BelongsTo as BelongsToField;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Arr;
+
 use Eminiarts\Tabs\Tabs;
 
 use Formfeed\ResourceCards\ResourceCard;
 
-use Illuminate\Database\Eloquent\Model;
 use ErrorException;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionObject;
@@ -32,7 +36,7 @@ class Breadcrumbs extends ResourceCard {
     public $resource;
     public array $extraClasses = [];
 
-    public function __construct(NovaRequest $request, Resource $resource = null) {
+    public function __construct(NovaRequest $request, Resource $resource) {
         $this->resource = $resource;
         $this->request = $request ?? Request::instance();
         parent::__construct();
@@ -218,13 +222,9 @@ class Breadcrumbs extends ResourceCard {
             return true;
         } 
         else {
-            $relationships = $this->relationships($model);
-            if (count($relationships) > 0) {
-                foreach ($relationships as $key => $relationship) {
-                    if ($relationship['type'] === "BelongsTo") {
-                        return true;
-                    }
-                }
+            $relationship = $this->relationships($model);
+            if (!is_null($relationship) && method_exists($model, $relationship)) {
+                return true;
             }
         }
         return false;
@@ -235,24 +235,24 @@ class Breadcrumbs extends ResourceCard {
             return $model->{$this->getParentMethod()};
         } 
         else {
-            $relationships = $this->relationships($model);
-            if (count($relationships) > 0) {
-                foreach ($relationships as $key => $relationship) {
-                    if ($relationship['type'] === "BelongsTo") {
-                        return $model->$key;
-                    }
-                }
+            $relationship = $this->relationships($model);
+            if (!is_null($relationship) && method_exists($model, $relationship)) {
+                return $model->{$relationship};
             }
         }
         return null;
     }
 
     protected function relationships(Model $model) {
+        return $this->relationshipsViaFields($this->resource, $this->request) ?? $this->relationshipsViaType($model) ?? $this->relationshipsViaInvoke($model, $this->resource) ?? null;
+    }
 
-        $relationships = [];
-
+    protected function relationshipsViaInvoke(Model $model, Resource $resource) {
+        $invoke = (property_exists($resource::class, 'invokingReflection') ? $resource::class::$invokingReflection : config("breadcrumbs.invokingReflection", false)) ?? false;
+        if ($invoke !== true) {
+            return null;
+        } 
         $model = new (get_class($model));
-
         foreach ((new ReflectionClass($model))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if (
                 $method->class != get_class($model) ||
@@ -264,17 +264,46 @@ class Breadcrumbs extends ResourceCard {
 
             try {
                 $return = $method->invoke($model);
-                if ($return instanceof Relation) {
-                    $relationships[$method->getName()] = [
-                        'type' => (new ReflectionClass($return))->getShortName(),
-                        'model' => (new ReflectionClass($return->getRelated()))->getName()
-                    ];
+                $name = (new ReflectionClass($return))->getShortName();
+                if ($return instanceof Relation && $name === "BelongsTo") {
+                    return $method->getShortName();
                 }
             } catch (\Throwable $e) {
             }
         }
+        return null;
+    }
 
-        return $relationships;
+    protected function relationshipsViaType(Model $model) {
+        $model = new (get_class($model));
+        foreach ((new ReflectionClass($model))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+            if (
+                $method->class != get_class($model) ||
+                !empty($method->getParameters()) ||
+                $method->getName() == __FUNCTION__
+            ) {
+                continue;
+            }
+
+            $returnType = $method->getReturnType();
+            if (!is_null($returnType) && $returnType->getName() === BelongsTo::class) {
+                return $method->getShortName() ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    protected function relationshipsViaFields(Resource $resource, NovaRequest $request) {
+        $fields = $resource->availableFields($request);
+        $filtered = $fields->filter(function ($value, $key) {
+            return ($value instanceof BelongsToField);
+        });
+        if ($filtered->count() > 0) {
+            $belongsTo = $filtered->first();
+            return $belongsTo->belongsToRelationship ?? null;
+        }
+        return null;
     }
 
     protected function getTabPreservedName($tab) {
