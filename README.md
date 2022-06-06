@@ -124,10 +124,12 @@ In addition to these options you can also specify the following options in the r
 
 #### Link To parent
 This determines if the breadcrumb should link to the parent resource regardless of if the current resource's index is navigable from the main menu:
+
 `public static $linkToParent = true|false;`
 
 #### Extra CSS Classes
 These can be configured globally or chained to the Breadcrumbs class:
+
 `Breadcrumbs::make($request, $this)->withClasses(["my-extra", "classes"])`
 
 #### Visibility and Authorisations
