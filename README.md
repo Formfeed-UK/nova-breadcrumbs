@@ -8,7 +8,7 @@ Whilst I have tested this package, I have not tested its interactions with every
 
 1.0.0 introduces a breaking change in how the parent model is determined. The following is now applied in order:
 
-1) Attempt to get parent from the `parentMethod` method on the model
+1) Attempt to get parent from the model method with name retrieved from `parentMethod` config option
 2) Attempt to get parent from the first `Laravel\Nova\Fields\BelongsTo` field in your resource
 3) Attempt to get parent from the first method on your model that has a defined return type of `Illuminate\Database\Eloquent\Relations\BelongsTo`
 
