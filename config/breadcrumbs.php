@@ -37,6 +37,33 @@ return [
 
         /*
         |--------------------------------------------------------------------------
+        | Use Invoking Reflection
+        |--------------------------------------------------------------------------
+        |
+        | If the package can't get the parent relationship from either a specified 
+        | "parent" method, a Nova/Fields/BelongsTo field, or a method with BelongsTo 
+        | return type on the underlying model, it will attempt to find the parent
+        | via creating a new blank model, invoking the methods, and reading the
+        | response types.
+        |
+        | If your model methods are designed reasonably, this should present no issue
+        | however if your model methods have destructive side effects for any reason
+        | such as "truncate" this could be problematic behaviour.
+        |
+        | As such from 1.0.0 this behaviour is disabled globally by default.
+        |
+        | It can be enabled globally by setting this to true, or on a per-resource
+        | basis by setting the following static on the resource:
+        |
+        | public static $invokingReflection = true|false;
+        |
+        | Default Value: false
+        |
+        */
+        "invokingReflection" => false,
+
+        /*
+        |--------------------------------------------------------------------------
         | Title Static Property
         |--------------------------------------------------------------------------
         |
