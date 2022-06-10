@@ -104,9 +104,10 @@ class Breadcrumbs extends ResourceCard {
             $base = rtrim(config("nova.path", "/nova"), "/");
 
             if ($model->id) {
+                $currentResource = Nova::newResourceFromModel($model);
                 $relationship = [
                     'displayType' => 'detail',
-                    'label' => $model->$title,
+                    'label' => $currentResource->title(),
                     'resourceName' => $key,
                     'resourceId' => $model->id,
                     'base' => $base

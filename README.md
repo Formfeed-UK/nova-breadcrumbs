@@ -36,7 +36,7 @@ It supports:
 - Automatic detection of belongsTo relationships, and the ability to specify a relationship as the "parent" relationship
 - Linking directly to Resource Tabs in the [eminiarts/nova-tabs](https://github.com/eminiarts/nova-tabs) package (Tab slugs are recommended)
 - Linking to either the resource's index or its parent (for relationships included as fields)
-- Customising the title static variable and label functions for resources
+- Customising the title and label functions for resources
 - Specifying custom css classes
 
 This package relies on [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) which wrap a number of nova pages. If you override these pages yourself ensure that nova-resource-cards is loaded after the packages which do so. 
