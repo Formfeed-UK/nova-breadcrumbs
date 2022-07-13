@@ -2,21 +2,7 @@
 
 This [Laravel Nova](https://nova.laravel.com/) package adds automated breadcrumbs to the top of Nova 4 resources.
 
-## 1.0.0 Breaking Changes
-
-1.0.0 introduces a breaking change in how the parent model is determined. The following is now applied in order:
-
-1) Attempt to get parent from the model method with name retrieved from `parentMethod` config option
-2) Attempt to get parent from the first `Laravel\Nova\Fields\BelongsTo` field in your resource
-3) Attempt to get parent from the first method on your model that has a defined return type of `Illuminate\Database\Eloquent\Relations\BelongsTo`
-
-If none of these are fulfilled the package now optionally (defaulting to false):
-
-4) Attempt to find a `Laravel\Nova\Fields\BelongsTo` relationship via creating a blank model, invoking it's methods, and checking the type of the return.
-
-This was previously turned on by default if the `parentMethod` was not found, and had the potential to be destructive if there were methods on the model which were destructive across all records, such as `Model::truncate()`
-
-Please see the **Configuration Options** section below for more details on how to enable this functionality. 
+Version 1.x has breaking changes from 0.x for parent resource discovery. See the [issues section](#100-breaking-changes) for details.
 
 ## Requirements
 
@@ -153,6 +139,22 @@ You can also set this on a per-resource basis with the following static:
 - Enable support for Polymorphic/ManyToMany relationships based upon previously visited resources
 
 If you have any requests for functionality or find any bugs please open an issue or submit a Pull Request. Pull requests will be actioned faster than Issues.
+
+### 1.0.0 Breaking Changes
+
+1.0.0 introduces a breaking change in how the parent model is determined. The following is now applied in order:
+
+1) Attempt to get parent from the model method with name retrieved from `parentMethod` config option
+2) Attempt to get parent from the first `Laravel\Nova\Fields\BelongsTo` field in your resource
+3) Attempt to get parent from the first method on your model that has a defined return type of `Illuminate\Database\Eloquent\Relations\BelongsTo`
+
+If none of these are fulfilled the package now optionally (defaulting to false):
+
+4) Attempt to find a `Laravel\Nova\Fields\BelongsTo` relationship via creating a blank model, invoking it's methods, and checking the type of the return.
+
+This was previously turned on by default if the `parentMethod` was not found, and had the potential to be destructive if there were methods on the model which were destructive across all records, such as `Model::truncate()`
+
+Please see the [**Configuration Options**](#invoking-reflection) section for more details on how to enable this functionality. 
 
 ## License
 
