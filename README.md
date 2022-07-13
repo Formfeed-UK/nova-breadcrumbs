@@ -2,8 +2,6 @@
 
 This [Laravel Nova](https://nova.laravel.com/) package adds automated breadcrumbs to the top of Nova 4 resources.
 
-Whilst I have tested this package, I have not tested its interactions with every package out there, and in every environment possible. It currently has an 0.x version number due to its lack of tenure with regards to interactions outside of my environment more than anything else. 
-
 ## 1.0.0 Breaking Changes
 
 1.0.0 introduces a breaking change in how the parent model is determined. The following is now applied in order:
