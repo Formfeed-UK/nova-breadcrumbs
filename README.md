@@ -127,6 +127,11 @@ This determines if the breadcrumb should link to the parent resource regardless 
 
 `public static $linkToParent = true|false;`
 
+#### Disable Parent Breadcrumbs
+Resolving Parent breadcrumbs can be disabled by adding the following static variable to a resource:
+
+`public static $resolveParentBreadcrumbs = false;`
+
 #### Extra CSS Classes
 These can be configured globally or chained to the Breadcrumbs class:
 
