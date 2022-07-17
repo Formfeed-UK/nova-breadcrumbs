@@ -136,7 +136,7 @@ class Breadcrumbs extends ResourceCard {
                 ];
             }
             $array[] = $indexCrumb;
-            $this->getRelationshipTree($this->getParentModel($model), $array);
+            if (!property_exists($novaClass, "resolveParentBreadcrumbs") || $novaClass::$resolveParentBreadcrumbs !== false) $this->getRelationshipTree($this->getParentModel($model), $array);
         }
     }
 
