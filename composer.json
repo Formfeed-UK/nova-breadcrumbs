@@ -13,7 +13,7 @@
     "require": {
         "php": "^7.4|^8",
         "laravel/nova": "^4.0",
-        "formfeed-uk/nova-resource-cards": "^1.0.1"
+        "formfeed-uk/nova-resource-cards": "*"
     },
     "autoload": {
         "psr-4": {
