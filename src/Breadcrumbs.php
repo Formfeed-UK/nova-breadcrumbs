@@ -24,6 +24,10 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionObject;
 
+/**
+* @method static static make(NovaRequest $request, Resource $resource)
+**/
+
 class Breadcrumbs extends ResourceCard {
     /**
      * The width of the card (1/3, 1/2, or full).
