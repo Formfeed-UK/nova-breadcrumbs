@@ -101,6 +101,22 @@ A very basic example could look like this:
     }
 ```
 
+### Usage on Dashboards
+
+Simply include the Breadcrumbs at the start of the Cards array for your dashboard. You'll need to include the request manually, as its not available on the Dashboard cards method.
+
+For example for the default Dashboard:
+
+```php
+    public function cards()
+    {
+        return [
+            Breadcrumbs::make(app(NovaRequest::class), $this),
+            new Help,
+        ];
+    }
+```
+
 ### Configuration Options
 
 Please see the included config file for a full list of configuration options (it's well commented).
