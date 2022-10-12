@@ -20,13 +20,15 @@ use Eminiarts\Tabs\Tabs;
 use Formfeed\ResourceCards\ResourceCard;
 
 use ErrorException;
+use Laravel\Nova\Dashboard;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionObject;
 
 /**
- * @method static static make(NovaRequest $request, Resource $resource)
- */
+ * @method static static make(NovaRequest $request, Resource|Dashboard $resource)
+ **/
+
 class Breadcrumbs extends ResourceCard {
     /**
      * The width of the card (1/3, 1/2, or full).
@@ -39,7 +41,7 @@ class Breadcrumbs extends ResourceCard {
     public $resource;
     public array $extraClasses = [];
 
-    public function __construct(NovaRequest $request, Resource $resource) {
+    public function __construct(NovaRequest $request, Resource|Dashboard $resource) {
         $this->resource = $resource;
         $this->request = $request ?? Request::instance();
         parent::__construct();
@@ -65,6 +67,17 @@ class Breadcrumbs extends ResourceCard {
     }
 
     protected function breadcrumbArray() {
+
+        if ($this->resource instanceof Dashboard) {
+            return [
+                ['url' => config("nova.path", "/nova"), 'displayType' => 'home', 'label' => __("Home")],
+                [
+                    'label' => $this->resource->label(),
+                    'url' => $this->resource->uriKey(),
+                ]
+            ];
+        }
+
         $primaryKey = $this->resource->model()->getKeyName();
         $currentModel = null;
         if (!$this->request->query('resourceId')) {
@@ -150,7 +163,7 @@ class Breadcrumbs extends ResourceCard {
         }
 
         if (!is_null(config("breadcrumbs.linkToParent"))) {
-            if(config("breadcrumbs.linkToParent") === true && $this->hasParentModel($model)) {
+            if (config("breadcrumbs.linkToParent") === true && $this->hasParentModel($model)) {
                 return true;
             }
         }
@@ -224,8 +237,7 @@ class Breadcrumbs extends ResourceCard {
     protected function hasParentModel(Model $model) {
         if (method_exists($model, $this->getParentMethod())) {
             return true;
-        } 
-        else {
+        } else {
             $relationship = $this->relationships($model);
             if (!is_null($relationship) && method_exists($model, $relationship)) {
                 return true;
@@ -237,8 +249,7 @@ class Breadcrumbs extends ResourceCard {
     protected function getParentModel(Model $model) {
         if (method_exists($model, $this->getParentMethod())) {
             return $model->{$this->getParentMethod()};
-        } 
-        else {
+        } else {
             $relationship = $this->relationships($model);
             if (!is_null($relationship) && method_exists($model, $relationship)) {
                 return $model->{$relationship};
@@ -255,7 +266,7 @@ class Breadcrumbs extends ResourceCard {
         $invoke = (property_exists($resource::class, 'invokingReflection') ? $resource::class::$invokingReflection : config("breadcrumbs.invokingReflection", false)) ?? false;
         if ($invoke !== true) {
             return null;
-        } 
+        }
         $model = new (get_class($model));
         foreach ((new ReflectionClass($model))->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             if (
