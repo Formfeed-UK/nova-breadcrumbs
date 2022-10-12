@@ -22,6 +22,7 @@ It supports:
 - Linking to either the resource's index or its parent (for relationships included as fields)
 - Customising the title and label functions for resources
 - Specifying custom css classes
+- Use on Dashboards (only to the extent that the Breadcrumbs show as `Home -> {Current Dashboard}`). Mainly for UI consistency. 
 
 This package relies on [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) which wrap a number of nova pages. If you override these pages yourself ensure that nova-resource-cards is loaded after the packages which do so. 
 
@@ -140,7 +141,6 @@ You can also set this on a per-resource basis with the following static:
 
 ## Issues/Todo
 
-- Make compatible with Dashboards and other non-resource based pages.
 - Enable support for Polymorphic/ManyToMany relationships based upon previously visited resources
 
 If you have any requests for functionality or find any bugs please open an issue or submit a Pull Request. Pull requests will be actioned faster than Issues.
