@@ -8,7 +8,7 @@ Version 1.x has breaking changes from 0.x for parent resource discovery. See the
 
 - `php: >=8.0`
 - `laravel/nova: ^4.0`
-- `formfeed-uk/nova-resource-cards: ^1.0`
+- `formfeed-uk/nova-resource-cards: ^1.1`
 
 ## Features
 
