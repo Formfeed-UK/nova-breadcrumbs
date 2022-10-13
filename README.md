@@ -26,8 +26,6 @@ It supports:
 
 This package relies on [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) which wrap a number of nova pages. If you override these pages yourself ensure that nova-resource-cards is loaded after the packages which do so. 
 
-Please note that this package is currently **not** compatible with dashboards.
-
 ## Installation
 
 1) Install the package in to a Laravel app that uses [Nova](https://nova.laravel.com) via composer:
