@@ -8,7 +8,7 @@ Version 1.x has breaking changes from 0.x for parent resource discovery. See the
 
 - `php: >=8.0`
 - `laravel/nova: ^4.0`
-- `formfeed-uk/nova-resource-cards: ^1.0`
+- `formfeed-uk/nova-resource-cards: ^1.1`
 
 ## Features
 
@@ -22,10 +22,9 @@ It supports:
 - Linking to either the resource's index or its parent (for relationships included as fields)
 - Customising the title and label functions for resources
 - Specifying custom css classes
+- Use on Dashboards (only to the extent that the Breadcrumbs show as `Home -> {Current Dashboard}`). Mainly for UI consistency. 
 
 This package relies on [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) which wrap a number of nova pages. If you override these pages yourself ensure that nova-resource-cards is loaded after the packages which do so. 
-
-Please note that this package is currently **not** compatible with dashboards.
 
 ## Installation
 
@@ -100,6 +99,22 @@ A very basic example could look like this:
     }
 ```
 
+### Usage on Dashboards
+
+Simply include the Breadcrumbs at the start of the Cards array for your dashboard. You'll need to include the request manually, as its not available on the Dashboard cards method.
+
+For example for the default Dashboard:
+
+```php
+    public function cards()
+    {
+        return [
+            Breadcrumbs::make(app(NovaRequest::class), $this),
+            new Help,
+        ];
+    }
+```
+
 ### Configuration Options
 
 Please see the included config file for a full list of configuration options (it's well commented).
@@ -140,7 +155,6 @@ You can also set this on a per-resource basis with the following static:
 
 ## Issues/Todo
 
-- Make compatible with Dashboards and other non-resource based pages.
 - Enable support for Polymorphic/ManyToMany relationships based upon previously visited resources
 
 If you have any requests for functionality or find any bugs please open an issue or submit a Pull Request. Pull requests will be actioned faster than Issues.
