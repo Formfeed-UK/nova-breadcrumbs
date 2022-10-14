@@ -73,7 +73,7 @@ class Breadcrumbs extends ResourceCard {
                 ['url' => config("nova.path", "/nova"), 'displayType' => 'home', 'label' => __("Home")],
                 [
                     'label' => $this->resource->label(),
-                    'url' => $this->resource->uriKey(),
+                    'displayType' => 'span'
                 ]
             ];
         }
