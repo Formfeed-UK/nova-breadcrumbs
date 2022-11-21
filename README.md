@@ -11,7 +11,7 @@ Preview available on the v2 Branch, subject to breaking changes at any time unti
 #### 2.x will introduce Breaking Changes:
 
 - Will use the Nova 4.19+ Breadcrumbs Vue components
-- No Longer uses resource cards (This gives better UX as the breadcrumbs will be sent via the page props as per the built in ones
+- No Longer uses resource cards (This gives better UX as the breadcrumbs will be sent via the page props as per the built in ones and drops a request)
 - Will intercept the Nova Breadcrumbs via middleware
 - Can no longer have custom CSS (due to using the Nova components)
 - (Potentially) can no longer use the onlyOn{view}, exceptOn{view} etc permissions methods. Open to porting these over to the new version if there is a need
