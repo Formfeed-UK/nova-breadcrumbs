@@ -4,6 +4,23 @@ This [Laravel Nova](https://nova.laravel.com/) package adds automated breadcrumb
 
 Version 1.x has breaking changes from 0.x for parent resource discovery. See the [issues section](#100-breaking-changes) for details.
 
+### Upcoming 2.x Version Changes
+
+Preview available on the v2 Branch, subject to breaking changes at any time until it recieves a release.
+
+#### 2.x will introduce Breaking Changes:
+
+- Will use the Nova 4.19+ Breadcrumbs Vue components
+- No Longer uses resource cards (This gives better UX as the breadcrumbs will be sent via the page props as per the built in ones and drops a request)
+- Will intercept the Nova Breadcrumbs via middleware
+- Can no longer have custom CSS (due to using the Nova components)
+- (Potentially) can no longer use the onlyOn{view}, exceptOn{view} etc permissions methods. Open to porting these over to the new version if there is a need
+- Each breadcrumb will extend the Nova Breadcrumb class, and the array of breadcrumbs will extend the Nova Breadcrumbs class.
+
+#### It will add:
+
+- A breadcrumbs method to the resource, with access to the breadcrumbs for that resource and the entire Breadcrumbs Class, allowing you to define manual breadcrumbs for a Resource
+
 ## Requirements
 
 - `php: >=8.0`
