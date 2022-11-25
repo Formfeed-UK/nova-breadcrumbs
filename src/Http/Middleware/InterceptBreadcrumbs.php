@@ -23,6 +23,10 @@ class InterceptBreadcrumbs {
 
     public function handle(Request $request, Closure $next) {
 
+        if (array_key_exists("uses", $request->route()->action) && $request->route()->action['uses'] instanceof Closure) {
+            return $next($request);
+        }
+
         $routeController = $request->route()->getController();
 
         if ($this->isPageController($routeController) && Nova::breadcrumbsEnabled()) {
