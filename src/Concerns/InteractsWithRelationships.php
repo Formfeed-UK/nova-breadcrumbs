@@ -15,9 +15,10 @@ use ReflectionMethod;
 
 trait InteractsWithRelationships {
 
-    protected function relationships(Resource $resource) {
+    protected function relationships(Resource $resource, NovaRequest $request = null) {
         $model = $resource->model();
-        return $this->relationshipsViaMethod($model) ?? $this->relationshipsViaFields($resource, $this->request) ?? $this->relationshipsViaType($model) ?? $this->relationshipsViaInvoke($model, $resource) ?? null;
+        $request ??= NovaRequest::createFromGlobals();
+        return $this->relationshipsViaMethod($model) ?? $this->relationshipsViaFields($resource, $request) ?? $this->relationshipsViaType($model) ?? $this->relationshipsViaInvoke($model, $resource) ?? null;
     }
 
     protected function relationshipsViaMethod($model) {

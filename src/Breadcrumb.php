@@ -22,13 +22,10 @@ class Breadcrumb extends NovaBreadcrumb {
 
     use InteractsWithParentResources;
     use InteractsWithRelationships;
-    protected $request;
 
     public function __construct($name, $path = null, $request = null) {
         $this->name = $name;
         $this->path = $path;
-
-        if ($request === null) $this->request = NovaRequest::createFromGlobals();
     }
 
     /**
@@ -48,7 +45,7 @@ class Breadcrumb extends NovaBreadcrumb {
 
     public static function indexResource($resourceClass) {
 
-        $breadcrumb = static::make(Nova::__($resourceClass::label()))
+        $breadcrumb = static::make(Nova::__($resourceClass::{static::label()}()))
                         ->path('/resources/' . $resourceClass::uriKey())
                         ->canSee(function ($request) use ($resourceClass) {
                             return $resourceClass::availableForNavigation($request) && $resourceClass::authorizedToViewAny($request);
@@ -73,7 +70,7 @@ class Breadcrumb extends NovaBreadcrumb {
     }
 
     public static function detailResource($resourceClass) {
-        return static::make(__($resourceClass->title()))
+        return static::make(__($resourceClass->{static::title()}()))
         ->path('/resources/' . $resourceClass::uriKey() . '/' . $resourceClass->getKey())
         ->canSee(function ($request) use ($resourceClass) {
             return $resourceClass->authorizedToView($request);
@@ -120,7 +117,7 @@ class Breadcrumb extends NovaBreadcrumb {
             return null;
         }
 
-        $fields = $parentResource->fields($this->request);
+        $fields = $parentResource->fields(NovaRequest::createFromGlobals());
 
         foreach ($fields as $field) {
             if (!$field instanceof Tabs) {
@@ -142,6 +139,14 @@ class Breadcrumb extends NovaBreadcrumb {
         }
 
         return null;
+    }
+
+    protected static function label() {
+        return config("breadcrumbs.label", "label");
+    }
+
+    protected static function title() {
+        return config("breadcrumbs.title", "title");
     }
 
     public function getTabPreservedName($tab) {
