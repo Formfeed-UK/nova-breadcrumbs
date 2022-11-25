@@ -29,7 +29,7 @@ class InterceptBreadcrumbs {
 
         $routeController = $request->route()->getController();
 
-        if ($this->isPageController($routeController) && Nova::breadcrumbsEnabled()) {
+        if ( $this->isPageController($routeController) && Nova::breadcrumbsEnabled()) {
             $request = NovaRequest::createFrom($request);
             $response = $next($request);
 
@@ -41,7 +41,12 @@ class InterceptBreadcrumbs {
                 $responsePage = $response->original;
             }
 
-            $responsePage['props']['breadcrumbs'] = $this->getBreadcrumbs($request, $responsePage['props']['breadcrumbs']);
+            if (is_null($responsePage)) {
+                return $response;
+            }
+
+            $responsePage['props'] ??= [];
+            $responsePage['props']['breadcrumbs'] = $this->getBreadcrumbs($request);
 
             return Inertia::render($responsePage['component'], $responsePage['props']);
         } else {
@@ -49,7 +54,7 @@ class InterceptBreadcrumbs {
         }
     }
 
-    protected function getBreadcrumbs(NovaRequest $request, $breadcrumbs) {
+    protected function getBreadcrumbs(NovaRequest $request) {
         $breadcrumbs = Breadcrumbs::make(null)->build($request);
         return $breadcrumbs;
     }
