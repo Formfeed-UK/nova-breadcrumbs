@@ -79,7 +79,7 @@ class Breadcrumb extends NovaBreadcrumb {
 
     public function shouldLinkToParent($resource) {
 
-        $novaClass = $resource::class;
+        $novaClass = is_string($resource) ? $resource : $resource::class;
 
         if (isset($novaClass::$linkToParent)) {
             return $novaClass::$linkToParent;
