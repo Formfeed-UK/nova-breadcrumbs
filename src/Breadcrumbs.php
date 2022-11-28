@@ -163,6 +163,11 @@ class Breadcrumbs extends NovaBreadcrumbs {
             return call_user_func(static::$formBreadcrumbCallback, [$request, $this, Breadcrumb::resource($resource), $type]);
         }
 
+        if ($type === "attach") {
+            $relatedResourceClass = $request->relatedResource();
+            return Breadcrumb::make(__("Attach: :resource", ["resource" => $relatedResourceClass::singularLabel()]));
+        }
+
         if (!is_null($type) && !in_array($type, ["index", "detail", "dashboard"])) {
             return Breadcrumb::make(__(Str::ucfirst($type)), null);
         }
