@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 use Formfeed\Breadcrumbs\Concerns\InteractsWithParentResources;
 use Formfeed\Breadcrumbs\Concerns\InteractsWithRelationships;
-
+use Illuminate\Support\Arr;
 
 class Breadcrumbs extends NovaBreadcrumbs {
 
@@ -105,18 +105,21 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
         $novaClass = $resource::class;
 
-        if ($resource === $this->resource) $breadcrumbsArray[] = $this->formBreadcrumb($this->request, $resource);
-        $breadcrumbsArray[] = $this->detailBreadcrumb($this->request, $resource);
+        // Add Form Breadcrumbs
+        if ($resource === $this->resource) array_push($breadcrumbsArray, ...Arr::wrap($this->formBreadcrumb($this->request, $resource));
+        
+        // Add Detail Breadcrumbs
+        array_push($breadcrumbsArray, ...Arr::wrap($this->detailBreadcrumb($this->request, $resource)));
 
+        // Add Index Breadcrumbs
         if ($resource->model()->exists) {
-            $breadcrumbsArray[] = $this->indexBreadcrumb($this->request, $resource);
+            array_push($breadcrumbsArray, ...Arr::wrap($this->indexBreadcrumb($this->request, $resource)));
         }
 
+        // Modify Array via Resource Callback
         $breadcrumbsArray = $this->resourceBreadcrumbs($this->request, $resource, $breadcrumbsArray);
 
-        if (!is_array($breadcrumbsArray)) {
-            $breadcrumbsArray = [$breadcrumbsArray];
-        }
+        $breadcrumbsArray = Arr::wrap($breadcrumbsArray);
 
         $this->items = array_merge($this->items, $breadcrumbsArray);
 
@@ -165,7 +168,10 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
         if ($type === "attach") {
             $relatedResourceClass = $request->relatedResource();
-            return Breadcrumb::make(__("Attach: :resource", ["resource" => $relatedResourceClass::singularLabel()]));
+            return [
+                Breadcrumb::indexResource($relatedResourceClass),
+                Breadcrumb::make(__("Attach: :resource", ["resource" => $relatedResourceClass::singularLabel()]))
+            ];
         }
 
         if (!is_null($type) && !in_array($type, ["index", "detail", "dashboard"])) {
