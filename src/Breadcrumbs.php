@@ -106,7 +106,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
         $novaClass = $resource::class;
 
         // Add Form Breadcrumbs
-        if ($resource === $this->resource) array_push($breadcrumbsArray, ...Arr::wrap($this->formBreadcrumb($this->request, $resource));
+        if ($resource === $this->resource) array_push($breadcrumbsArray, ...Arr::wrap($this->formBreadcrumb($this->request, $resource)));
         
         // Add Detail Breadcrumbs
         array_push($breadcrumbsArray, ...Arr::wrap($this->detailBreadcrumb($this->request, $resource)));
