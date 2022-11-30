@@ -65,7 +65,8 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected function breadcrumbArray(NovaRequest $request) {
 
         if ($this->pageType($request) === "dashboard") {
-            $this->items = $this->dashboardArray($request);
+            $this->items[] = $this->rootBreadcrumb($request);
+            array_push($this->items, ...Arr::wrap($this->dashboardBreadcrumb($request)));
             return;
         }
 
@@ -85,14 +86,6 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
         $this->items = array_reverse($this->items);
 
-    }
-
-    protected function dashboardArray(NovaRequest $request) {
-
-        return [
-            Breadcrumb::make(__("Home"), config('nova.path', "/nova")),
-            $this->dashboardBreadcrumb($request),
-        ];
     }
 
     protected function getRelationshipTree($resource) {
