@@ -64,9 +64,10 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
     protected function breadcrumbArray(NovaRequest $request) {
 
+        $this->items[] = $this->rootBreadcrumb($request);
+
         if ($this->pageType($request) === "dashboard") {
-            $this->items[] = $this->rootBreadcrumb($request);
-            array_push($this->items, $this->dashboardBreadcrumb($request));
+            array_push($this->items, ...$this->dashboardBreadcrumb($request));
             return;
         }
 
@@ -74,18 +75,13 @@ class Breadcrumbs extends NovaBreadcrumbs {
             return;
         }
 
-        $this->getRelationshipTree($this->resource);
-
         if (!$this->resource->model()->exists && ($this->request->viaResource && $this->request->viaResourceId)) {
             if ($parent = $this->request->findParentResource()) {
                 $this->getRelationshipTree($parent);
             }
         }
 
-        $this->items[] = $this->rootBreadcrumb($request);
-
-        $this->items = array_reverse($this->items);
-
+        $this->getRelationshipTree($this->resource);
     }
 
     protected function getRelationshipTree($resource) {
@@ -116,18 +112,18 @@ class Breadcrumbs extends NovaBreadcrumbs {
         // Modify Array via Resource Callback
         $breadcrumbsArray = $this->resourceBreadcrumbs($this->request, $resource, $breadcrumbsArray);
 
-        $this->items = array_merge(array_reverse($breadcrumbsArray), $this->items);
+        $this->items = array_merge($this->items, $breadcrumbsArray);
 
     }
 
     protected function indexBreadcrumb(NovaRequest $request, $resource) {
 
         if (method_exists($resource, "indexBreadcrumb")) {
-            return array_reverse(Arr::wrap($resource->indexBreadcrumb($request, $this, Breadcrumb::indexResource($resource))));
+            return Arr::wrap($resource->indexBreadcrumb($request, $this, Breadcrumb::indexResource($resource)));
         }
 
         if (!is_null(static::$indexBreadcrumbCallback)) {
-            return array_reverse(Arr::wrap(call_user_func(static::$indexBreadcrumbCallback, [$request, $this, Breadcrumb::indexResource($resource)])));
+            return Arr::wrap(call_user_func(static::$indexBreadcrumbCallback, [$request, $this, Breadcrumb::indexResource($resource)]));
         }
 
         return Arr::wrap(Breadcrumb::indexResource($resource));
@@ -136,11 +132,11 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected function detailBreadcrumb(NovaRequest $request, $resource) {
 
         if (method_exists($resource, "detailBreadcrumb")) {
-            return array_reverse(Arr::wrap($resource->detailBreadcrumb($request, $this, Breadcrumb::resource($resource))));
+            return Arr::wrap($resource->detailBreadcrumb($request, $this, Breadcrumb::resource($resource)));
         }
 
         if (!is_null(static::$detailBreadcrumbCallback)) {
-            return array_reverse(Arr::wrap(call_user_func(static::$detailBreadcrumbCallback, [$request, $this, Breadcrumb::resource($resource)])));
+            return Arr::wrap(call_user_func(static::$detailBreadcrumbCallback, [$request, $this, Breadcrumb::resource($resource)]));
         }
 
         return Arr::wrap(Breadcrumb::resource($resource));
@@ -150,11 +146,11 @@ class Breadcrumbs extends NovaBreadcrumbs {
         $type = $this->pageType($request);
 
         if (method_exists($resource, "formBreadcrumb")) {
-            return array_reverse(Arr::wrap($resource->formBreadcrumb($request, $this, Breadcrumb::resource($resource), $type)));
+            return Arr::wrap($resource->formBreadcrumb($request, $this, Breadcrumb::resource($resource), $type));
         }
 
         if (!is_null(static::$formBreadcrumbCallback)) {
-            return array_reverse(Arr::wrap(call_user_func(static::$formBreadcrumbCallback, [$request, $this, Breadcrumb::resource($resource), $type])));
+            return Arr::wrap(call_user_func(static::$formBreadcrumbCallback, [$request, $this, Breadcrumb::resource($resource), $type]));
         }
 
         if ($type === "attach") {
@@ -181,11 +177,11 @@ class Breadcrumbs extends NovaBreadcrumbs {
         }
 
         if (method_exists($dashboard, "dashboardBreadcrumb")) {
-            return array_reverse(Arr::wrap($dashboard->dashboardBreadcrumb($request, $this, Breadcrumb::make($dashboard?->label() ?? __("Dashboard")))));
+            return Arr::wrap($dashboard->dashboardBreadcrumb($request, $this, Breadcrumb::make($dashboard?->label() ?? __("Dashboard"))));
         }
 
         if (!is_null(static::$dashboardBreadcrumbCallback)) {
-            return array_reverse(Arr::wrap(call_user_func(static::$dashboardBreadcrumbCallback, [$request, $this, Breadcrumb::make($dashboard?->label() ?? __("Dashboard"))])));
+            return Arr::wrap(call_user_func(static::$dashboardBreadcrumbCallback, [$request, $this, Breadcrumb::make($dashboard?->label() ?? __("Dashboard"))]));
         }
 
         return Arr::wrap(Breadcrumb::make($dashboard?->label() ?? __("Dashboard")));
@@ -194,11 +190,11 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected function resourceBreadcrumbs(NovaRequest $request, $resource, $breadcrumbArray) {
 
         if (method_exists($resource, "breadcrumbs")) {
-            return array_reverse(Arr::wrap($resource->breadcrumbs($request, $this, $breadcrumbArray)));
+            return Arr::wrap($resource->breadcrumbs($request, $this, $breadcrumbArray));
         }
 
         if (!is_null(static::$resourceBreadcrumbCallback)) {
-            return array_reverse(Arr::wrap(call_user_func(static::$resourceBreadcrumbCallback, [$request, $this, $breadcrumbArray])));
+            return Arr::wrap(call_user_func(static::$resourceBreadcrumbCallback, [$request, $this, $breadcrumbArray]));
         }
 
         return $breadcrumbArray;
@@ -206,7 +202,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
     protected function rootBreadcrumb(NovaRequest $request) {
         if (!is_null(static::$rootBreadcrumbCallback)) {
-            return array_reverse(Arr::wrap(call_user_func(static::$rootBreadcrumbCallback, [$request, $this, Breadcrumb::make(__("Home"), config('nova.path', "/nova"))])));
+            return Arr::wrap(call_user_func(static::$rootBreadcrumbCallback, [$request, $this, Breadcrumb::make(__("Home"), config('nova.path', "/nova"))]));
         }
 
         return Breadcrumb::make(__("Home"), config('nova.path', "/nova"));
