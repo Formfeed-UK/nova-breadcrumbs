@@ -91,7 +91,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
         return [
             Breadcrumb::make(__("Home"), config('nova.path', "/nova")),
-            Breadcrumb::make(Nova::dashboardForKey($request->route("name"), $request)?->label() ?? __("Dashboard") ),
+            $this->dashboardBreadcrumb($request),
         ];
     }
 
@@ -179,7 +179,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
         }
     }
 
-    protected function dashboardBreadcrumb(NovaRequest $request, $resource) {
+    protected function dashboardBreadcrumb(NovaRequest $request) {
 
         $dashboard = Nova::dashboardForKey($request->route("name"), $request);
 
