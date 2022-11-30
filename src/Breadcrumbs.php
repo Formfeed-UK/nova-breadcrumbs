@@ -145,7 +145,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected function detailBreadcrumb(NovaRequest $request, $resource) {
 
         if (method_exists($resource, "detailBreadcrumb")) {
-            return call_user_func($resource->detailBreadcrumb, [$request, $this, Breadcrumb::resource($resource)]);
+            return $resource->detailBreadcrumb($request, $this, Breadcrumb::resource($resource));
         }
 
         if (!is_null(static::$detailBreadcrumbCallback)) {
