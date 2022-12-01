@@ -98,13 +98,13 @@ class Breadcrumbs extends NovaBreadcrumbs {
             $this->getRelationshipTree($this->getParentResource($resource));
         };
 
-        // Add Index Breadcrumbs
         if ($resource->model()->exists) {
             array_push($breadcrumbsArray, ...$this->indexBreadcrumb($this->request, $resource));
+            array_push($breadcrumbsArray, ...$this->detailBreadcrumb($this->request, $resource));
         }
-
-        // Add Detail Breadcrumbs
-        array_push($breadcrumbsArray, ...$this->detailBreadcrumb($this->request, $resource));
+        else {
+            array_push($breadcrumbsArray, ...$this->indexBreadcrumb($this->request, $resource));
+        }
 
         // Add Form Breadcrumbs
         if ($resource === $this->resource) array_push($breadcrumbsArray, ...$this->formBreadcrumb($this->request, $resource));
@@ -145,6 +145,10 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected function formBreadcrumb($request, $resource) {
         $type = $this->pageType($request);
 
+        if (!is_null($type) && in_array($type, ["index", "detail", "dashboard"])) {
+            return [];
+        }
+
         if (method_exists($resource, "formBreadcrumb")) {
             return Arr::wrap($resource->formBreadcrumb($request, $this, Breadcrumb::resource($resource), $type));
         }
@@ -161,11 +165,8 @@ class Breadcrumbs extends NovaBreadcrumbs {
             ];
         }
 
-        if (!is_null($type) && !in_array($type, ["index", "detail", "dashboard"])) {
-            return Arr::wrap(Breadcrumb::make(__(Str::ucfirst($type)), null));
-        }
+        return Arr::wrap(Breadcrumb::make(__(Str::ucfirst($type)), null));
 
-        return [];
     }
 
     protected function dashboardBreadcrumb(NovaRequest $request) {
