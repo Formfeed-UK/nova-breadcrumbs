@@ -64,7 +64,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
     protected function breadcrumbArray(NovaRequest $request) {
 
-        $this->items[] = $this->rootBreadcrumb($request);
+        array_push($this->items, ...$this->rootBreadcrumb($request));
 
         if ($this->pageType($request) === "dashboard") {
             array_push($this->items, ...$this->dashboardBreadcrumb($request));
@@ -206,7 +206,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
             return Arr::wrap(call_user_func_array(static::$rootBreadcrumbCallback, [$request, $this, Breadcrumb::make(__("Home"), config('nova.path', "/nova"))]));
         }
 
-        return Breadcrumb::make(__("Home"), config('nova.path', "/nova"));
+        return [Breadcrumb::make(__("Home"), config('nova.path', "/nova"))];
     }
 
     public function findResource(NovaRequest $request) {
