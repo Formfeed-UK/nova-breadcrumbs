@@ -28,6 +28,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected static $resourceBreadcrumbCallback;
     protected static $dashboardBreadcrumbCallback;
     protected static $rootBreadcrumbCallback;
+    protected static $groupBreadcrumbCallback;
 
     public static function detailCallback(callable $callback) {
         static::$detailBreadcrumbCallback = $callback;
@@ -51,6 +52,10 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
     public static function rootCallback(callable $callback) {
         static::$rootBreadcrumbCallback = $callback;
+    }
+
+    public static function groupCallback(callable $callback) {
+        static::$groupBreadcrumbCallback = $callback;
     }
 
     public function build(NovaRequest $request = null) {
@@ -95,19 +100,24 @@ class Breadcrumbs extends NovaBreadcrumbs {
         $novaClass = $resource::class;
 
         if (!property_exists($novaClass, "resolveParentBreadcrumbs") || $novaClass::$resolveParentBreadcrumbs !== false) {
-            $this->getRelationshipTree($this->getParentResource($resource));
+            $parent = $this->getParentResource($resource);
+            $this->getRelationshipTree($parent);
         };
 
-        if ($resource->model()->exists) {
-            array_push($breadcrumbsArray, ...$this->indexBreadcrumb($this->request, $resource));
-            array_push($breadcrumbsArray, ...$this->detailBreadcrumb($this->request, $resource));
+        if (($parent && $parent::group() && $parent::group() !== $resource::group()) || (is_null($parent) && $resource::group())) {
+            $breadcrumbsArray = array_merge($breadcrumbsArray, $this->groupBreadcrumb($this->request, $resource));
         }
-        else {
-            array_push($breadcrumbsArray, ...$this->indexBreadcrumb($this->request, $resource));
+
+        $breadcrumbsArray = array_merge($breadcrumbsArray, $this->indexBreadcrumb($this->request, $resource));
+
+        if ($resource->model()->exists) {
+            $breadcrumbsArray = array_merge($breadcrumbsArray, $this->detailBreadcrumb($this->request, $resource));
         }
 
         // Add Form Breadcrumbs
-        if ($resource === $this->resource) array_push($breadcrumbsArray, ...$this->formBreadcrumb($this->request, $resource));
+        if ($resource === $this->resource) {
+             $breadcrumbsArray = array_merge($breadcrumbsArray, $this->formBreadcrumb($this->request, $resource));
+        }
 
         // Modify Array via Resource Callback
         $breadcrumbsArray = $this->resourceBreadcrumbs($this->request, $resource, $breadcrumbsArray);
@@ -127,6 +137,25 @@ class Breadcrumbs extends NovaBreadcrumbs {
         }
 
         return Arr::wrap(Breadcrumb::indexResource($resource));
+    }
+
+    protected function groupBreadcrumb(NovaRequest $request, $resource) {
+
+        $groupBreadcrumb = Breadcrumb::make(__($resource::group()));
+
+        if (method_exists($resource, "groupBreadcrumb")) {
+            return Arr::wrap($resource->groupBreadcrumb($request, $this, $groupBreadcrumb));
+        }
+
+        if (!is_null(static::$groupBreadcrumbCallback)) {
+            return Arr::wrap(call_user_func_array(static::$groupBreadcrumbCallback, [$request, $this, $groupBreadcrumb]));
+        }
+
+        if (config("breadcrumbs.includeGroup") === false || is_null($resource::group()) || ($resource::group() === "Other" && config("breadcrumbs.includeOtherGroup") !== true)) {
+            return [];
+        }
+
+        return Arr::wrap($groupBreadcrumb);
     }
 
     protected function detailBreadcrumb(NovaRequest $request, $resource) {

@@ -106,15 +106,16 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Global CSS Classes
+        | Ignore default "Other" group
         |--------------------------------------------------------------------------
         |
-        | Set global additional css classes for all breadcrumbs cards.
+        | Nova automatically assigns a group of "Other", ignore this group in
+        | breadcrumbs generation
         |
-        | Can be added to on a per-resource basis using withClasses()
+        | Default: false
         |
         */
-        "cssClasses" => [],
+        "includeOtherGroup" => false,
 
 
 ];
