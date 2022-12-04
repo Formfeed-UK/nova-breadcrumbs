@@ -1,19 +1,16 @@
 {
     "name": "formfeed-uk/nova-breadcrumbs",
-    "description": "A Laravel Nova package to show breadcrumbs on Nova Resources",
+    "description": "A Laravel Nova package to extend the capabilities of the first party Nova Breadcrumbs",
     "homepage": "https://github.com/formfeed-uk/nova-breadcrumbs",
     "license": "MIT",
     "keywords": [
         "laravel",
         "nova",
-        "cards",
-        "resource-cards",
         "breadcrumbs"
     ],
     "require": {
         "php": "^7.4|^8",
-        "laravel/nova": "^4.0",
-        "formfeed-uk/nova-resource-cards": "^1.1.0"
+        "laravel/nova": "^4.19"
     },
     "autoload": {
         "psr-4": {
@@ -23,7 +20,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Formfeed\\Breadcrumbs\\CardServiceProvider"
+                "Formfeed\\Breadcrumbs\\BreadcrumbServiceProvider"
             ]
         }
     },
