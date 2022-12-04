@@ -104,7 +104,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
             $this->getRelationshipTree($parent);
         };
 
-        if ((isset($parent) && $parent::group() && $parent::group() !== $resource::group()) || (is_null($parent) && $resource::group())) {
+        if ((isset($parent) && $parent::group() && $parent::group() !== $resource::group()) || (!isset($parent) && $resource::group())) {
             $breadcrumbsArray = array_merge($breadcrumbsArray, $this->groupBreadcrumb($this->request, $resource));
         }
 
