@@ -19,7 +19,7 @@ Version 2.x is a significant change from previous versions, this package now aug
 - Will intercept the Nova Breadcrumbs via middleware
 - Can no longer have custom CSS (due to using the Nova components)
 - Can no longer use the onlyOn{view}, exceptOn{view} etc permissions methods. Breadcrumb visibility can now be controlled via the callbacks/class methods
-- Each breadcrumb will extend the Nova Breadcrumb class, and the array of Creadcrumbs will extend the Nova Breadcrumbs class.
+- Each breadcrumb will extend the Nova Breadcrumb class, and the array of Breadcrumbs will extend the Nova Breadcrumbs class.
 
 ## Requirements >= v2.x
 
@@ -44,7 +44,7 @@ It supports:
 - Linking to either the resource's index or its parent (for relationships included as fields)
 - Customising the title and label functions for resources
 - Use on Dashboards (only to the extent that the Breadcrumbs show as `Home -> {Current Dashboard}`). Mainly for UI consistency. 
-- Methods/Callbacks to control the breadcrumbs generation globall or per resource
+- Methods/Callbacks to control the breadcrumbs generation global or per resource
 
 ## Installation
 
