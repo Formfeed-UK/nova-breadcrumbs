@@ -98,7 +98,7 @@ class MyModel extends Model {
 
 ### Resource Methods
 
-You can override the default behaviour of the breadcrumbs package on a per resource basis by adding methods to your Nova Resource. These methods should all return an instance of Breadcrumb or an array of Breadcrumb instances.
+You can optionally override the default behaviour of the breadcrumbs package on a per resource basis by adding methods to your Nova Resource. These methods should all return an instance of Breadcrumb or an array of Breadcrumb instances.
 
 - `groupBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $groupBreadcrumb)` - Override the group breadcrumb for this resource
 - `indexBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $indexBreadcrumb)` - Override the index breadcrumb for this resource
