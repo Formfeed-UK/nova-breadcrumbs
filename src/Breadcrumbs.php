@@ -151,7 +151,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
             return Arr::wrap(call_user_func_array(static::$groupBreadcrumbCallback, [$request, $this, $groupBreadcrumb]));
         }
 
-        if (config("breadcrumbs.includeGroup") === false || is_null($resource::group()) || ($resource::group() === "Other" && config("breadcrumbs.includeOtherGroup") !== true)) {
+        if (config("breadcrumbs.includeGroup", false) === false || is_null($resource::group()) || ($resource::group() === "Other" && config("breadcrumbs.includeOtherGroup", false) !== true)) {
             return [];
         }
 
