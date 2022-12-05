@@ -12,10 +12,10 @@ return [
         | the index view for that resource
         |
         | Default Value: false
-        | Default Behaviour: 
+        | Default Behaviour:
         | Where a resource is in the main navigation, links to that resource will
         | go to its index view.
-        | 
+        |
         | Can be overridden on a per resource basis with:
         | public static $linkToParent = true|false;
         |
@@ -27,7 +27,7 @@ return [
         | Model Parent method
         |--------------------------------------------------------------------------
         |
-        | The name of the optional method on the resources model that defines the 
+        | The name of the optional method on the resources model that defines the
         | parent model
         |
         | Default Value: parent
@@ -40,8 +40,8 @@ return [
         | Use Invoking Reflection
         |--------------------------------------------------------------------------
         |
-        | If the package can't get the parent relationship from either a specified 
-        | "parent" method, a Nova/Fields/BelongsTo field, or a method with BelongsTo 
+        | If the package can't get the parent relationship from either a specified
+        | "parent" method, a Nova/Fields/BelongsTo field, or a method with BelongsTo
         | return type on the underlying model, it will attempt to find the parent
         | via creating a new blank model, invoking the methods, and reading the
         | response types.
@@ -70,7 +70,7 @@ return [
         | The static property on a nova resource that stores the "title" column to
         | use as the label for resource record crumbs.
         |
-        | Default: "title"  
+        | Default: "title"
         |
         */
         "titleProperty" => "title",
@@ -81,11 +81,11 @@ return [
         |--------------------------------------------------------------------------
         |
         | The resource static method to use to determine the label and
-        | singular label for the resource name 
+        | singular label for the resource name
         |
-        | Default: 
+        | Default:
         | labelFunction: "label"
-        | singularLabelFunction: "singularLabel"  
+        | singularLabelFunction: "singularLabel"
         |
         */
         "labelFunction" => "label",
@@ -93,15 +93,29 @@ return [
 
         /*
         |--------------------------------------------------------------------------
-        | Global CSS Classes
+        | Include Resource Group in Breadcrumbs Array
         |--------------------------------------------------------------------------
         |
-        | Set global additional css classes for all breadcrumbs cards.
+        | Determines whether to include the group as defined by the group static
+        | function on the array (where present)
         |
-        | Can be added to on a per-resource basis using withClasses()
+        | Default: false
         |
         */
-        "cssClasses" => [],
+        "includeGroup" => false,
 
-    
+        /*
+        |--------------------------------------------------------------------------
+        | Ignore default "Other" group
+        |--------------------------------------------------------------------------
+        |
+        | Nova automatically assigns a group of "Other", ignore this group in
+        | breadcrumbs generation
+        |
+        | Default: false
+        |
+        */
+        "includeOtherGroup" => false,
+
+
 ];
