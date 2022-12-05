@@ -2,6 +2,8 @@
 
 This [Laravel Nova](https://nova.laravel.com/) package extends the breadcrumbs functionality of the First Party Nova breadcrumbs.
 
+Tests repo can be found here: https://github.com/Formfeed-UK/nova-breadcrumbs-tests
+
 ## Version 2.x Changes
 
 Version 2.x is a significant change from previous versions, this package now augments the existing nova breadcrumbs to offer:
