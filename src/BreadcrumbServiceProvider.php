@@ -19,8 +19,8 @@ class BreadcrumbServiceProvider extends ServiceProvider {
         $this->addMiddleware();
 
         $this->publishes([
-            __DIR__.'/../config/breadcrumbs.php' => config_path('breadcrumbs.php'),
-        ], "breadcrumbs-config");
+            __DIR__.'/../config/nova-breadcrumbs.php' => config_path('nova-breadcrumbs.php'),
+        ], "nova-breadcrumbs-config");
     }
 
     /**

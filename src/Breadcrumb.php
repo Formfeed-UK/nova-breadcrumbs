@@ -85,8 +85,8 @@ class Breadcrumb extends NovaBreadcrumb {
             return $novaClass::$linkToParent;
         }
 
-        if (!is_null(config("breadcrumbs.linkToParent"))) {
-            if (config("breadcrumbs.linkToParent") === true && $this->hasParentResource($resource)) {
+        if (!is_null(config("nova-breadcrumbs.linkToParent"))) {
+            if (config("nova-breadcrumbs.linkToParent") === true && $this->hasParentResource($resource)) {
                 return true;
             }
         }
@@ -142,11 +142,11 @@ class Breadcrumb extends NovaBreadcrumb {
     }
 
     protected static function label() {
-        return config("breadcrumbs.label", "label");
+        return config("nova-breadcrumbs.label", "label");
     }
 
     protected static function title() {
-        return config("breadcrumbs.title", "title");
+        return config("nova-breadcrumbs.title", "title");
     }
 
     public function getTabPreservedName($tab) {
