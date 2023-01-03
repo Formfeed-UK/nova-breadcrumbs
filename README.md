@@ -1,10 +1,32 @@
 # Nova 4 Breadcrumbs
 
-This [Laravel Nova](https://nova.laravel.com/) package adds automated breadcrumbs to the top of Nova 4 resources.
+This [Laravel Nova](https://nova.laravel.com/) package extends the breadcrumbs functionality of the First Party Nova breadcrumbs.
 
-Version 1.x has breaking changes from 0.x for parent resource discovery. See the [issues section](#100-breaking-changes) for details.
+Tests repo can be found here: https://github.com/Formfeed-UK/nova-breadcrumbs-tests
 
-## Requirements
+## Version 2.x Changes
+
+Version 2.x is a significant change from previous versions, this package now augments the existing nova breadcrumbs to offer:
+
+- Static methods on the breadcrumbs class allowing control of breadcrumb generation globally
+- Methods on Resources allowing control of breadcrumb generation per resource (per-resource methods override static callbacks)
+- Support for resource groups
+- Nested resource breadcrumbs
+
+#### Breaking changes from 1.x
+- Will use the Nova 4.19+ Breadcrumbs Vue components
+- No Longer uses resource cards (This gives better UX as the breadcrumbs will be sent via the page props as per the built in ones and drops a request)
+- Will intercept the Nova Breadcrumbs via middleware
+- Can no longer have custom CSS (due to using the Nova components)
+- Can no longer use the onlyOn{view}, exceptOn{view} etc permissions methods. Breadcrumb visibility can now be controlled via the callbacks/class methods
+- Each breadcrumb will extend the Nova Breadcrumb class, and the array of Breadcrumbs will extend the Nova Breadcrumbs class.
+
+## Requirements >= v2.x
+
+- `php: >=8.0`
+- `laravel/nova: ^4.19`
+
+## Requirements <= v1.x
 
 - `php: >=8.0`
 - `laravel/nova: ^4.0`
@@ -21,10 +43,8 @@ It supports:
 - Linking directly to Resource Tabs in the [eminiarts/nova-tabs](https://github.com/eminiarts/nova-tabs) package (Tab slugs are recommended)
 - Linking to either the resource's index or its parent (for relationships included as fields)
 - Customising the title and label functions for resources
-- Specifying custom css classes
 - Use on Dashboards (only to the extent that the Breadcrumbs show as `Home -> {Current Dashboard}`). Mainly for UI consistency. 
-
-This package relies on [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) which wrap a number of nova pages. If you override these pages yourself ensure that nova-resource-cards is loaded after the packages which do so. 
+- Methods/Callbacks to control the breadcrumbs generation global or per resource
 
 ## Installation
 
@@ -43,25 +63,17 @@ php artisan vendor:publish --tag=breadcrumbs-config
 
 ### General
 
-1) Include the breadcrumbs card at the beginning of the cards array in any resources that you wish to use breadcrumbs (be sure to include `$this` as the second parameter):
+1) Enable Nova Breadcrumbs in the same way as the first party Nova Breadcrumbs in your `NovaServiceProvider` `boot` method:
 
 ```php
-...
 
-use Formfeed\Breadcrumbs\Breadcrumbs;
+    public function boot() {
+        parent::boot();
 
-class MyResource extends Resource {
-    ...
-    public function cards(NovaRequest $request) {
-        return [
-            Breadcrumbs::make($request, $this),
-            ...
-        ];
+        Nova::withBreadcrumbs(true);
     }
-    ...
-}
+
 ```
-This card extends `ResourceCard` from that package and as such has the visbility and authorisation methods available. 
 
 2) Optionally configure a `parent` method on your Model to explicitly define the relationship the package should query. The name of this function can be changed in the configuration file.
 
@@ -84,35 +96,85 @@ class MyModel extends Model {
 }
 ```
 
-### Include in all Resources
+### Resource Methods
 
-If you would like to include the Breadcrumbs on all resources in one place, the best way to do this is to override the `resolveCards` method on your `App/Nova/Resource.php` file, as by default this file is extended by all of the Nova resources in your Application.
+You can optionally override the default behaviour of the breadcrumbs package on a per resource basis by adding methods to your Nova Resource. These methods should all return an instance of Breadcrumb or an array of Breadcrumb instances.
 
-A very basic example could look like this:
+- `groupBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $groupBreadcrumb)` - Override the group breadcrumb for this resource
+- `indexBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $indexBreadcrumb)` - Override the index breadcrumb for this resource
+- `detailBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $detailBreadcrumb)` - Override the detail breadcrumb for this resource
+- `formBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $formBreadcrumb, $type)` - Override the form breadcrumb for this resource, $type is a string referring to the current form type (create, update, attach, replicate etc)
+- `resourceBreadcrumbs(NovaRequest $request, Breadcrumbs $breadcrumbs, array $breadcrumbArray)` - Override the entire set of breadcrumbs for this resource
+
+For Dashboards, you can use the following method:
+
+- `dashboardBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $dashboardBreadcrumb)` - Override the dashboard breadcrumb for this resource
+
+#### Example
 
 ```php
-    public function resolveCards(NovaRequest $request)
-    {
-        $cards = $this->cards($request);
-        array_unshift($cards, Breadcrumbs::make($request, $this));
-        return collect(array_values($this->filter($cards)));
+
+class MyResource extends Resource {
+
+    // Change the name of the breadcrumb
+    public function detailBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $detailBreadcrumb) {
+        return $detailBreadcrumb->name = _('My Custom Name');
     }
+
+    // Remove all previous breadcrumbs and add a new root
+    public function resourceBreadcrumbs(NovaRequest $request, Breadcrumbs $breadcrumbs, array $breadcrumbArray) {
+        $breadcrumbs->items = [Breadcrumb::make('Home', '/')];
+        return $breadcrumbArray;
+    }
+
+    // Prevent the group breadcrumb for this resource
+    public function groupBreadcrumb(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $groupBreadcrumb) {
+        return null;
+    }
+}
+
 ```
 
-### Usage on Dashboards
+### Static Callbacks
 
-Simply include the Breadcrumbs at the start of the Cards array for your dashboard. You'll need to include the request manually, as its not available on the Dashboard cards method.
+You can override the default behaviour of the breadcrumbs globally by using the following static methods on the Breadcrumbs class. They should be provided within a boot method on a service provider.
 
-For example for the default Dashboard:
+These methods will be overriden by any per resource methods.
+
+The closure provided should return either an instance of Breadcrumb or an array of Breadcrumb instances.
+
+- detailCallback(callable $callback)
+- indexCallback(callable $callback)
+- formCallback(callable $callback)
+- resourceCallback(callable $callback)
+- dashboardCallback(callable $callback)
+- rootCallback(callable $callback)
+- groupCallback(callable $callback)
+
+#### Example 
 
 ```php
-    public function cards()
-    {
-        return [
-            Breadcrumbs::make(app(NovaRequest::class), $this),
-            new Help,
-        ];
+
+use FormFeed\Breadcrumbs\Breadcrumbs;
+use FormFeed\Breadcrumbs\Breadcrumb;
+
+class NovaServiceProvider extends ServiceProvider {
+
+    public function boot() {
+        parent::boot();
+
+        Nova::withBreadcrumbs(true);
+
+        Breadcrumbs::detailCallback(function(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $detailBreadcrumb) {
+            return $detailBreadcrumb->name = _('My Custom Name');
+        });
+
+        Breadcrumbs::rootCallback(function(NovaRequest $request, Breadcrumbs $breadcrumbs, Breadcrumb $rootBreadcrumb) {
+            return Breadcrumb::make(_('My Custom Root Breadcrumb'), "/my-root");
+        });
     }
+}
+
 ```
 
 ### Configuration Options
@@ -121,7 +183,7 @@ Please see the included config file for a full list of configuration options (it
 
 In addition to these options you can also specify the following options in the resource itself:
 
-#### Link To parent
+#### Link To parent 
 This determines if the breadcrumb should link to the parent resource regardless of if the current resource's index is navigable from the main menu:
 
 `public static $linkToParent = true|false;`
@@ -130,14 +192,6 @@ This determines if the breadcrumb should link to the parent resource regardless 
 Resolving Parent breadcrumbs can be disabled by adding the following static variable to a resource:
 
 `public static $resolveParentBreadcrumbs = false;`
-
-#### Extra CSS Classes
-These can be configured globally or chained to the Breadcrumbs class:
-
-`Breadcrumbs::make($request, $this)->withClasses(["my-extra", "classes"])`
-
-#### Visibility and Authorisations
-Please see the [formfeed-uk/nova-resource-cards](https://github.com/Formfeed-UK/nova-resource-cards) package for information on the visbility and authorisation methods. They broadly follow the same pattern as fields.
 
 #### Invoking Reflection
 Determining the parent via invoking reflected blank model methods and checking the returned type is now disabled by default.
@@ -158,22 +212,6 @@ You can also set this on a per-resource basis with the following static:
 - Enable support for Polymorphic/ManyToMany relationships based upon previously visited resources
 
 If you have any requests for functionality or find any bugs please open an issue or submit a Pull Request. Pull requests will be actioned faster than Issues.
-
-### 1.0.0 Breaking Changes
-
-1.0.0 introduces a breaking change in how the parent model is determined. The following is now applied in order:
-
-1) Attempt to get parent from the model method with name retrieved from `parentMethod` config option
-2) Attempt to get parent from the first `Laravel\Nova\Fields\BelongsTo` field in your resource
-3) Attempt to get parent from the first method on your model that has a defined return type of `Illuminate\Database\Eloquent\Relations\BelongsTo`
-
-If none of these are fulfilled the package now optionally (defaulting to false):
-
-4) Attempt to find a `Laravel\Nova\Fields\BelongsTo` relationship via creating a blank model, invoking it's methods, and checking the type of the return.
-
-This was previously turned on by default if the `parentMethod` was not found, and had the potential to be destructive if there were methods on the model which were destructive across all records, such as `Model::truncate()`
-
-Please see the [**Configuration Options**](#invoking-reflection) section for more details on how to enable this functionality. 
 
 ## License
 
