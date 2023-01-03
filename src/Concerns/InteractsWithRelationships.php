@@ -2,13 +2,13 @@
 
 namespace Formfeed\Breadcrumbs\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\Relation;
+
+use Laravel\Nova\Fields\BelongsTo as BelongsToField;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\BelongsTo as BelongsToField;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use ReflectionClass;
 use ReflectionMethod;
@@ -29,7 +29,7 @@ trait InteractsWithRelationships {
     }
 
     protected function relationshipsViaInvoke(Model|Null $model, Resource $resource) {
-        $invoke = (property_exists($resource::class, 'invokingReflection') ? $resource::class::$invokingReflection : config("breadcrumbs.invokingReflection", false)) ?? false;
+        $invoke = (property_exists($resource::class, 'invokingReflection') ? $resource::class::$invokingReflection : config("nova-breadcrumbs.invokingReflection", false)) ?? false;
         if ($invoke !== true) {
             return null;
         }

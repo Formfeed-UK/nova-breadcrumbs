@@ -22,7 +22,7 @@ trait InteractsWithParentResources {
     }
 
     protected function getParentMethod() {
-        return config("breadcrumbs.parentMethod", "parent");
+        return config("nova-breadcrumbs.parentMethod", "parent");
     }
 
 }

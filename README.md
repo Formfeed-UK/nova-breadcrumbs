@@ -56,7 +56,7 @@ composer require formfeed-uk/nova-breadcrumbs
 2) Publish the config file (optional)
 
 ```bash
-php artisan vendor:publish --tag=breadcrumbs-config
+php artisan vendor:publish --tag=nova-breadcrumbs-config
 ```
 
 ## Usage
@@ -155,8 +155,8 @@ The closure provided should return either an instance of Breadcrumb or an array 
 
 ```php
 
-use FormFeed\Breadcrumbs\Breadcrumbs;
 use FormFeed\Breadcrumbs\Breadcrumb;
+use FormFeed\Breadcrumbs\Breadcrumbs;
 
 class NovaServiceProvider extends ServiceProvider {
 
