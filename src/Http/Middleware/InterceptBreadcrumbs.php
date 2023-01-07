@@ -4,7 +4,6 @@ namespace Formfeed\Breadcrumbs\Http\Middleware;
 
 use Closure;
 
-use Illuminate\Routing\Controller;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 
@@ -59,7 +58,7 @@ class InterceptBreadcrumbs {
         return $breadcrumbs;
     }
 
-    protected function isPageController(Controller $controller) {
+    protected function isPageController($controller) {
         return ((new \ReflectionClass($controller))?->getNamespaceName() ?? false) === "Laravel\Nova\Http\Controllers\Pages";
     }
 }
