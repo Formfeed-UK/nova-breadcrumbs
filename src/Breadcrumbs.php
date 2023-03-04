@@ -2,6 +2,7 @@
 
 namespace Formfeed\Breadcrumbs;
 
+use Laravel\Nova\Http\Requests\LensRequest;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Menu\Breadcrumbs as NovaBreadcrumbs;
 use Laravel\Nova\Dashboard;
@@ -27,6 +28,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected static $formBreadcrumbCallback;
     protected static $resourceBreadcrumbCallback;
     protected static $dashboardBreadcrumbCallback;
+    protected static $lensBreadcrumbCallback;
     protected static $rootBreadcrumbCallback;
     protected static $groupBreadcrumbCallback;
 
@@ -48,6 +50,10 @@ class Breadcrumbs extends NovaBreadcrumbs {
 
     public static function dashboardCallback(callable $callback) {
         static::$dashboardBreadcrumbCallback = $callback;
+    }
+
+    public static function lensCallback(callable $callback) {
+        static::$lensBreadcrumbCallback = $callback;
     }
 
     public static function rootCallback(callable $callback) {
@@ -87,6 +93,10 @@ class Breadcrumbs extends NovaBreadcrumbs {
         }
 
         $this->getRelationshipTree($this->resource);
+
+        if ($this->pageType($request) === "lens") {
+            array_push($this->items, ...$this->lensBreadcrumb($request));
+        }
     }
 
     protected function getRelationshipTree($resource) {
@@ -174,7 +184,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
     protected function formBreadcrumb($request, $resource) {
         $type = $this->pageType($request);
 
-        if (!is_null($type) && in_array($type, ["index", "detail", "dashboard"])) {
+        if (!is_null($type) && in_array($type, ["index", "detail", "dashboard", "lens"])) {
             return [];
         }
 
@@ -215,6 +225,25 @@ class Breadcrumbs extends NovaBreadcrumbs {
         }
 
         return Arr::wrap(Breadcrumb::make($dashboard?->label() ?? __("Dashboard")));
+    }
+
+    protected function lensBreadcrumb(NovaRequest $request) {
+
+        $lens = LensRequest::createFrom($request)->lens();
+
+        if (is_null($lens)) {
+            return;
+        }
+
+        if (method_exists($lens, "lensBreadcrumb")) {
+            return Arr::wrap($lens->lensBreadcrumb($request, $this, Breadcrumb::make($lens?->name() ?? __("Lens"))));
+        }
+
+        if (!is_null(static::$lensBreadcrumbCallback)) {
+            return Arr::wrap(call_user_func_array(static::$lensBreadcrumbCallback, [$request, $this, Breadcrumb::make($lens?->name() ?? __("Lens"))]));
+        }
+
+        return Arr::wrap(Breadcrumb::make($lens?->name() ?? __("Lens")));
     }
 
     protected function resourceBreadcrumbs(NovaRequest $request, $resource, $breadcrumbArray) {
@@ -269,6 +298,8 @@ class Breadcrumbs extends NovaBreadcrumbs {
                 return "attach";
             case Pages\DashboardController::class:
                 return "dashboard";
+            case Pages\LensController::class:
+                return "lens";
             default:
                 return null;
         }
