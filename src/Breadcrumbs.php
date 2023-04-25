@@ -260,11 +260,12 @@ class Breadcrumbs extends NovaBreadcrumbs {
     }
 
     protected function rootBreadcrumb(NovaRequest $request) {
+        $rootBreadcrumb = Breadcrumb::make(__("Home"), "/");
         if (!is_null(static::$rootBreadcrumbCallback)) {
-            return Arr::wrap(call_user_func_array(static::$rootBreadcrumbCallback, [$request, $this, Breadcrumb::make(__("Home"), config('nova.path', "/nova"))]));
+            return Arr::wrap(call_user_func_array(static::$rootBreadcrumbCallback, [$request, $this, $rootBreadcrumb]));
         }
 
-        return [Breadcrumb::make(__("Home"), config('nova.path', "/nova"))];
+        return [$rootBreadcrumb];
     }
 
     public function findResource(NovaRequest $request) {
