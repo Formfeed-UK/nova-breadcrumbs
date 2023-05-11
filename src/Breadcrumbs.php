@@ -213,7 +213,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
         $dashboard = Nova::dashboardForKey($request->route("name"), $request);
 
         if (is_null($dashboard)) {
-            return;
+            return [];
         }
 
         if (method_exists($dashboard, "dashboardBreadcrumb")) {
@@ -232,7 +232,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
         $lens = LensRequest::createFrom($request)->lens();
 
         if (is_null($lens)) {
-            return;
+            return [];
         }
 
         if (method_exists($lens, "lensBreadcrumb")) {
