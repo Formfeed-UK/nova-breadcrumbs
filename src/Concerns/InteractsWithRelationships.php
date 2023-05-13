@@ -12,6 +12,7 @@ use Laravel\Nova\Resource;
 
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionUnionType;
 
 trait InteractsWithRelationships {
 
@@ -67,8 +68,15 @@ trait InteractsWithRelationships {
             }
 
             $returnType = $method->getReturnType();
-            if (!is_null($returnType) && $returnType->getName() === BelongsTo::class) {
-                return $method->getShortName() ?? null;
+            if ($returnType instanceof ReflectionUnionType) {
+                $returnTypes = $returnType->getTypes();
+            } else {
+                $returnTypes = [$returnType];
+            }
+            foreach ($returnTypes as $type) {
+                if (!is_null($type) && $type->getName() === BelongsTo::class) {
+                    return $method->getShortName() ?? null;
+                }
             }
         }
 
