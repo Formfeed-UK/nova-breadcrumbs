@@ -27,11 +27,15 @@ class InterceptBreadcrumbs {
             $uses = $request->route()->action['uses'];
 
             // Routes can be cached as serialized \Laravel\SerializableClosure\SerializableClosure
-            try {
-                $uses = unserialize($uses)->getClosure();
-            } catch (\Exception) {
-                // PHP doesn't have a good way to check if a string is serialized
-                // unserialize() will either throw or return false on failure
+            if (is_string($uses)) {
+                try {
+                    $uses = unserialize($uses);
+                    if ($uses instanceof SerializableClosure) {
+                        $uses = $uses->getClosure();
+                    }
+                } catch (\Exception) {
+                    // PHP doesn't have a good way to check if a string is serialized
+                }
             }
 
             if ($uses instanceof Closure) {
