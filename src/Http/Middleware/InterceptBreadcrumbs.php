@@ -22,8 +22,25 @@ class InterceptBreadcrumbs {
 
     public function handle(Request $request, Closure $next) {
 
-        if (array_key_exists("uses", $request->route()->action) && $request->route()->action['uses'] instanceof Closure) {
-            return $next($request);
+        if (array_key_exists("uses", $request->route()->action)) {
+
+            $uses = $request->route()->action['uses'];
+
+            // Routes can be cached as serialized \Laravel\SerializableClosure\SerializableClosure
+            if (is_string($uses)) {
+                try {
+                    $uses = unserialize($uses);
+                    if ($uses instanceof SerializableClosure) {
+                        $uses = $uses->getClosure();
+                    }
+                } catch (\Exception) {
+                    // PHP doesn't have a good way to check if a string is serialized
+                }
+            }
+
+            if ($uses instanceof Closure) {
+                return $next($request);
+            }
         }
 
         $routeController = $request->route()->getController();
