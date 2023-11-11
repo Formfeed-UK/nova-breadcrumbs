@@ -80,7 +80,7 @@ class Breadcrumbs extends NovaBreadcrumbs {
         if ($this->pageType($request) === "lens") {
             $lens = LensRequest::createFrom($request)->lens();
 
-            if (!is_null($lens) && property_exists($lens, "resolveParentBreadcrumbs") && $lens::$resolveParentBreadcrumbs === false)) {
+            if (!is_null($lens) && property_exists($lens, "resolveParentBreadcrumbs") && $lens::$resolveParentBreadcrumbs === false) {
                 array_push($this->items, ...$this->lensBreadcrumb($request));
                 return;
             }
