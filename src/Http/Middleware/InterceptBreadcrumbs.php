@@ -26,7 +26,7 @@ class InterceptBreadcrumbs {
             return $next($request);
         }
 
-        $routeController = $request->route()->getController();
+        $routeController = $request->route()->getControllerClass();
 
         if ( $this->isPageController($routeController) && Nova::breadcrumbsEnabled()) {
             $request = NovaRequest::createFrom($request);
@@ -58,7 +58,7 @@ class InterceptBreadcrumbs {
         return $breadcrumbs;
     }
 
-    protected function isPageController($controller) {
-        return ((new \ReflectionClass($controller))?->getNamespaceName() ?? false) === "Laravel\Nova\Http\Controllers\Pages";
+    protected function isPageController(?string $controllerClass) {
+        return str_starts_with($controllerClass, "Laravel\Nova\Http\Controllers\Pages");
     }
 }

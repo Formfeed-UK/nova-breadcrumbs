@@ -282,8 +282,8 @@ class Breadcrumbs extends NovaBreadcrumbs {
     }
 
     protected function pageType(NovaRequest $request) {
-        $controller = $request->route()->getController();
-        switch ($controller::class) {
+        $controller = $request->route()->getControllerClass();
+        switch ($controller) {
             case Pages\ResourceDetailController::class:
                 return "detail";
             case Pages\ResourceIndexController::class:
